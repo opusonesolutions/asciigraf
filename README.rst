@@ -1,6 +1,13 @@
 asciigraf
 =========
 
+.. image:: https://travis-ci.org/AnjoMan/asciigraf.svg?branch=master
+    :target: https://travis-ci.org/AnjoMan/asciigraf
+
+.. image:: https://coveralls.io/repos/github/AnjoMan/asciigraf/badge.svg?branch=master
+    :target: https://coveralls.io/github/AnjoMan/asciigraf?branch=master
+
+
 Asciigraf is a python library that turns ascii diagrams of networks into
 network objects. It returns a `networkx <https://networkx.github.io/>`__
 graph of nodes for each alpha-numeric element in the input text; nodes
