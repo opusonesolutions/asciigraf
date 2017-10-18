@@ -10,6 +10,9 @@ asciigraf
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
 
+.. image:: https://badge.fury.io/py/asciigraf.svg
+    :target: https://pypi.python.org/pypi/asciigraf
+
 Asciigraf is a python library that turns ascii diagrams of networks into
 network objects. It returns a `networkx <https://networkx.github.io/>`__
 graph of nodes for each alpha-numeric element in the input text; nodes
