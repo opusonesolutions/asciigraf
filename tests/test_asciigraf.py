@@ -1,5 +1,5 @@
-from graphscii import graph_from_ascii
-from graphscii.graphscii import node_iter, Point
+from asciigraf import graph_from_ascii
+from asciigraf.asciigraf import node_iter, Point
 
 
 def test_ascii_positions():
