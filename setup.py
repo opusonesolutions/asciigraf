@@ -2,13 +2,13 @@ from setuptools import setup
 
 
 def readme():
-    with open("README.md", 'r') as f:
+    with open("README.rst", 'r') as f:
         return f.read()
 
 
 setup(
     name="asciigraf",
-    version="0.1.1",
+    version="0.1.2",
     packages=["asciigraf"],
     description="A python library for making ascii-art into network graphs.",
     classifiers=[
