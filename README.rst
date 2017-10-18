@@ -19,6 +19,15 @@ graph of nodes for each alpha-numeric element in the input text; nodes
 are connected in the graph to match the edges represented in the diagram
 by ``-``, ``/``, ``\`` and ``|``.
 
+Installation
+------------
+
+Asciigraf can be installed from pypi using pip:
+
+..code::
+
+    ~/$ pip install asciigraf
+
 Usage
 -----
 
