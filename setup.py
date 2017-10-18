@@ -1,14 +1,13 @@
 from setuptools import setup
 
 setup(
-    name="graphscii",
+    name="asciigraf",
     version="0.1.0",
-    packages=["graphscii"],
+    packages=["asciigraf"],
     description="A python library for making ascii-art into network graphs.",
-    author="Peter Downs",
+    author="Anton Lodder",
     author_email="antonlodder@gmail.com",
-    url="https://github.com/AnjoMan/graphscii",
-    download_url="https://github.com/AnjoMan/graphscii/archive/0.1.tar.gz",
+    url="https://github.com/AnjoMan/asciigraf",
     keywords=["graph", "network", "testing", "parser"],
     license="MIT",
     install_requires=[
