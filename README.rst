@@ -24,7 +24,7 @@ Installation
 
 Asciigraf can be installed from pypi using pip:
 
-..code::
+.. code::
 
     ~/$ pip install asciigraf
 
