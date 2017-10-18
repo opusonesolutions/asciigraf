@@ -27,6 +27,6 @@ setup(
         'networkx==1.11',
     ],
     extras_require={
-        "test": ["pytest"],
+        "test": ["pytest", "pytest-cov"],
     },
 )

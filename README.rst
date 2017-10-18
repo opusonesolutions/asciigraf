@@ -7,6 +7,8 @@ asciigraf
 .. image:: https://coveralls.io/repos/github/AnjoMan/asciigraf/badge.svg?branch=master
     :target: https://coveralls.io/github/AnjoMan/asciigraf?branch=master
 
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+    :target: https://opensource.org/licenses/MIT
 
 Asciigraf is a python library that turns ascii diagrams of networks into
 network objects. It returns a `networkx <https://networkx.github.io/>`__

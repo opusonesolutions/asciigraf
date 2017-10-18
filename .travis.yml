@@ -3,7 +3,11 @@ python:
   - "3.6"
 install:
   - python setup.py install
-script: pytest
+  - pip install coveralls pytest-cov
+script:
+  - pytest --cov-report term-missing --cov=asciigraf tests/
+after:
+  coveralls
 branches:
   only:
     - master
