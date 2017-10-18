@@ -1,1 +1,0 @@
-from graphscii.graphscii import graph_from_ascii
