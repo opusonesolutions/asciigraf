@@ -1,6 +1,13 @@
 asciigraf
 =========
 
+.. image:: https://travis-ci.org/AnjoMan/asciigraf.svg?branch=master
+    :target: https://travis-ci.org/AnjoMan/asciigraf
+
+.. image:: https://coveralls.io/repos/github/AnjoMan/asciigraf/badge.svg?branch=master
+    :target: https://coveralls.io/github/AnjoMan/asciigraf?branch=master
+
+
 Asciigraf is a python library that turns ascii diagrams of networks into
 network objects. It returns a `networkx <https://networkx.github.io/>`__
 graph of nodes for each alpha-numeric element in the input text; nodes
@@ -29,13 +36,13 @@ and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``
     print(network)
     >>> <networkx.classes.graph.Graph at 0x7f24c3a8b470>
 
-    print(list(network.edges()))
-    >>> [(NodeA, NodeB)]
+    print(network.edges())
+    >>> [('NodeA', 'NodeB')]
 
-    print(list(network.nodes()))
-    >>> [NodeA, NodeB]
+    print(network.nodes())
+    >>> ['NodeA', 'NodeB']
 
-    print(list(network.nodes(data=True)))
+    print(network.nodes(data=True))
     >>> [('NodeA', {'position': Point(1, 10)}), ('NodeB', {'position': Point(3, 23)})]
 
 Networkx provides tools to attach data to nodes and edges; in the above
