@@ -105,15 +105,4 @@ def node_iter(network_string):
 
 
 class BadEdgeException(Exception):
-    def __init__(self, message):
-        self.message = message
-
-
-class BadNetworkModel(Exception):
-    def __init__(self, message):
-        self.message = message
-
-
-class BadNetworkData(Exception):
-    def __init__(self, message):
-        self.message = message
+    pass
