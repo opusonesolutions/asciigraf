@@ -6,8 +6,8 @@ install:
   - pip install coveralls pytest-cov
 script:
   - pytest --cov-report term-missing --cov=asciigraf tests/
-after:
-  coveralls
+after_success:
+  - coveralls
 branches:
   only:
     - master
