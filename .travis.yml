@@ -1,6 +1,7 @@
 language: python
 python:
   - "3.6"
+  - "2.7"
 install:
   - python setup.py install
   - pip install coveralls pytest-cov
