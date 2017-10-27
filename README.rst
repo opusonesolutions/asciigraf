@@ -62,10 +62,15 @@ and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``
     print(network.nodes(data=True))
     >>> [('NodeA', {'position': Point(1, 10)}), ('NodeB', {'position': Point(3, 23)})]
 
+    print(network.edges(data=True))
+    >>> [('NodeA', 'NodeB', OrderedDict([('length', 10)]))]
+
+
 Networkx provides tools to attach data to nodes and edges; in the above
 example you can see that asciigraf uses this to attach a ``Point``
 object to each node indicating where on the *(x, y)* plane each node
-starts ( *0,0* is at the top-left).
+starts ( *0,0* is at the top-left). It also attaches a ``length`` attribute
+to each edge which matches the number of characters in that edge.
 
 .. code:: python
 
