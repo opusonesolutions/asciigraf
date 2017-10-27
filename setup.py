@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="asciigraf",
-    version="0.1.4",
+    version="0.2.0",
     packages=["asciigraf"],
     description="A python library for making ascii-art into network graphs.",
     classifiers=[

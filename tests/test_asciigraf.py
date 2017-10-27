@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from asciigraf import graph_from_ascii
 from asciigraf.asciigraf import node_iter, Point
 
@@ -135,3 +137,20 @@ def test_some_more_node_names():
                              """)
     assert len(graph.nodes()) == 19
     assert len(graph.edges()) == 19
+
+
+def test_line_lengths():
+    edge_data = graph_from_ascii("""
+            (13)           (10)
+        n0-------------n1----------n2
+                       |
+                       |  (3)
+                       |
+                       n4
+    """).edges(data=True)
+
+    assert edge_data == [
+        ("n0", "n1", OrderedDict([("length", 13)])),
+        ("n1", "n2", OrderedDict([("length", 10)])),
+        ("n1", "n4", OrderedDict([("length", 3)])),
+    ]
