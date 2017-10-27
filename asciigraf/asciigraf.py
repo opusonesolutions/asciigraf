@@ -58,7 +58,7 @@ def graph_from_ascii(network_string):
         ]
         edge_char_to_edge_map[pos]["nodes"] += neighboring_nodes
 
-    ascii_graph = networkx.Graph()
+    ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(nodes.keys())
     ascii_graph.add_edges_from(tuple(el["nodes"]) for el in edges)
     networkx.set_node_attributes(ascii_graph, name="position", values=nodes)
