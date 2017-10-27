@@ -62,6 +62,9 @@ def graph_from_ascii(network_string):
     ascii_graph.add_nodes_from(nodes.keys())
     ascii_graph.add_edges_from(tuple(el["nodes"]) for el in edges)
     networkx.set_node_attributes(ascii_graph, name="position", values=nodes)
+    networkx.set_edge_attributes(ascii_graph, name="length", values={
+        tuple(edge["nodes"]): len(edge["points"]) for edge in edges
+    })
     return ascii_graph
 
 
