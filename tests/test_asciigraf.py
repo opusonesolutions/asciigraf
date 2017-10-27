@@ -135,3 +135,20 @@ def test_some_more_node_names():
                              """)
     assert len(graph.nodes()) == 19
     assert len(graph.edges()) == 19
+
+
+def test_line_lengths():
+    edge_data = graph_from_ascii("""
+            (13)           (10)
+        n0-------------n1----------n2
+                       |
+                       |  (3)
+                       |
+                       n4
+    """).edges(data=True)
+
+    assert edge_data == [
+        ("n0", "n1", {"length": 13}),
+        ("n1", "n2", {"length": 13}),
+        ("n1", "n4", {"length": 3}),
+    ]
