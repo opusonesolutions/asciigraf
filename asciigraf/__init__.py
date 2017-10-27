@@ -1,1 +1,1 @@
-from asciigraf.asciigraf import graph_from_ascii
+from .asciigraf import graph_from_ascii
