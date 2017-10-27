@@ -15,7 +15,7 @@ def graph_from_ascii(network_string):
         "|":  [Point(-1, 0), Point(1, 0)]
     }
     EDGE_CHARS = {"\\", "-", "/", "|"}
-    nodes = {node_label: pos for node_label, pos in node_iter(network_string)}
+    nodes = OrderedDict(node_iter(network_string))
 
     node_chars = {}
     for node_label, pos in nodes.items():
