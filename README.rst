@@ -59,18 +59,52 @@ and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``
     print(network.nodes())
     >>> ['NodeA', 'NodeB']
 
+
+Networkx provides tools to attach data to nodes and edges, and asciigraf
+leverages these in a number of ways; in the example below you can see that
+asciigraf uses this to attach a ``Point``
+object to each node indicating where on the *(x, y)* plane each node
+starts ( *0,0* is at the top-left). It also attaches a ``length`` attribute
+to each edge which matches the number of characters in that edge.
+
+.. code:: python
+
     print(network.nodes(data=True))
     >>> [('NodeA', {'position': Point(1, 10)}), ('NodeB', {'position': Point(3, 23)})]
 
     print(network.edges(data=True))
     >>> [('NodeA', 'NodeB', OrderedDict([('length', 10)]))]
 
+Asciigraf also lets you annotate the edges of graphs using in-line labels ---
+denoted by parentheses. The contents of the label will be attached to the edge
+on which it is drawn with the attribute name ``label``.
 
-Networkx provides tools to attach data to nodes and edges; in the above
-example you can see that asciigraf uses this to attach a ``Point``
-object to each node indicating where on the *(x, y)* plane each node
-starts ( *0,0* is at the top-left). It also attaches a ``length`` attribute
-to each edge which matches the number of characters in that edge.
+.. code:: python
+
+    network = asciigraf.graph_from_ascii("""
+
+        A---(nuts)----B----(string)---C
+                      |
+                      |
+                      |
+                      D---(string)----E
+
+    """)
+
+    print(network.get_edge_data("A", "B")["label"])
+    >>> nuts
+
+    print(network.get_edge_data("B", "C")["label"])
+    >>> string
+
+    print(network.get_edge_data("D", "E")["label"])
+    >>> string
+
+    print(hasattr(network.get_edge_data("B", "D"), "label"))
+    >>> False
+
+
+Have fun!
 
 .. code:: python
 

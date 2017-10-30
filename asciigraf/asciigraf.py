@@ -5,7 +5,7 @@ import networkx
 
 
 def graph_from_ascii(network_string):
-    """ Produces a graph in the form of two sets, based on an ascii drawing
+    """ Produces a networkx graph, based on an ascii drawing
         of a network
     """
     EDGE_CHAR_NEIGHBOURS = {
@@ -15,18 +15,30 @@ def graph_from_ascii(network_string):
         "|":  [Point(0, -1), Point(0, 1)]
     }
     EDGE_CHARS = {"\\", "-", "/", "|"}
-    nodes = OrderedDict(node_iter(network_string))
+    nodes = list(node_iter(network_string))
 
-    node_chars = {}
-    for node_label, pos in nodes.items():
-        for offset, char in enumerate(node_label):
-            node_chars[pos + Point(offset, 0)] = node_label
+    node_chars = OrderedDict()
+    line_labels = {}
+    line_label_char_positions = set()
+    for node_label, root_position in nodes:
+        node_label_char_positions = {
+            root_position + Point(offset, 0)
+            for offset, _ in enumerate(node_label)
+        }
+        if node_label.startswith("(") and node_label.endswith(")"):
+            label_value = node_label[1:-1]
+            line_labels[root_position] = label_value
+            line_label_char_positions |= node_label_char_positions
+        else:
+            node_chars.update(
+                (pos, node_label) for pos in node_label_char_positions
+            )
 
-    # nodes = node_chars
+    # we'll treat edge labels (e.g. "(my_label)") as consecutive "-" edge chars
     edge_chars = OrderedDict(
-        (pos, char)
+        (pos, (char if char in EDGE_CHARS else "-"))
         for pos, char in char_iter(network_string)
-        if char in EDGE_CHARS
+        if char in EDGE_CHARS or pos in line_label_char_positions
     )
 
     edge_char_to_edge_map = {}
@@ -59,12 +71,26 @@ def graph_from_ascii(network_string):
         edge_char_to_edge_map[pos]["nodes"] += neighboring_nodes
 
     ascii_graph = networkx.OrderedGraph()
-    ascii_graph.add_nodes_from(nodes.keys())
-    ascii_graph.add_edges_from(tuple(el["nodes"]) for el in edges)
-    networkx.set_node_attributes(ascii_graph, name="position", values=nodes)
+    ascii_graph.add_nodes_from(
+        (node, {"position": position})
+        for node, position in nodes
+        if position not in line_label_char_positions
+    )
+    ascii_graph.add_edges_from(
+        tuple(edge["nodes"])
+        for edge in edges if edge["nodes"]
+    )
     networkx.set_edge_attributes(ascii_graph, name="length", values={
-        tuple(edge["nodes"]): len(edge["points"]) for edge in edges
+        tuple(edge["nodes"]): len(edge["points"])
+        for edge in edges if edge["nodes"]
     })
+    networkx.set_edge_attributes(
+        ascii_graph, name="label",
+        values={
+            tuple(edge_char_to_edge_map[pos]["nodes"]): label
+            for pos, label in line_labels.items()
+        }
+    )
     return ascii_graph
 
 
