@@ -9,10 +9,10 @@ def graph_from_ascii(network_string):
         of a network
     """
     EDGE_CHAR_NEIGHBOURS = {
-        "-":  [Point(0, -1), Point(0, 1)],
+        "-":  [Point(-1, 0), Point(1, 0)],
         "\\": [Point(-1, -1),  Point(1, 1)],
         "/":  [Point(-1, 1), Point(1, -1)],
-        "|":  [Point(-1, 0), Point(1, 0)]
+        "|":  [Point(0, -1), Point(0, 1)]
     }
     EDGE_CHARS = {"\\", "-", "/", "|"}
     nodes = OrderedDict(node_iter(network_string))
@@ -20,7 +20,7 @@ def graph_from_ascii(network_string):
     node_chars = {}
     for node_label, pos in nodes.items():
         for offset, char in enumerate(node_label):
-            node_chars[pos + Point(0, offset)] = node_label
+            node_chars[pos + Point(offset, 0)] = node_label
 
     # nodes = node_chars
     edge_chars = OrderedDict(
@@ -95,7 +95,7 @@ class Point(object):
 
 def char_iter(network_string):
     return (
-        (Point(row, col), char)
+        (Point(col, row), char)
         for row, line in enumerate(network_string.split("\n"))
         for col, char in enumerate(line)
         )
@@ -104,7 +104,7 @@ def char_iter(network_string):
 def node_iter(network_string):
     for row, line in enumerate(network_string.split("\n")):
         for match in re.finditer('\(?([0-9A-Za-z_{}]+)\)?', line):
-            yield (match.group(0), Point(row, match.start()))
+            yield (match.group(0), Point(match.start(), row))
 
 
 class BadEdgeException(Exception):

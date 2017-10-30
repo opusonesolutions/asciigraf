@@ -11,9 +11,9 @@ def test_ascii_positions():
                                  /
                                Nald33
         """)
-    assert graph.node["Node_1"]["position"] == Point(x=1, y=16)
-    assert graph.node["Node2"]["position"] == Point(x=1, y=25)
-    assert graph.node["Nald33"]["position"] == Point(x=3, y=31)
+    assert graph.node["Node_1"]["position"] == Point(x=16, y=1)
+    assert graph.node["Node2"]["position"] == Point(x=25, y=1)
+    assert graph.node["Nald33"]["position"] == Point(x=31, y=3)
 
 
 def test_node_iter_returns_label_and_position_of_feeder_nodes():
@@ -26,9 +26,9 @@ def test_node_iter_returns_label_and_position_of_feeder_nodes():
     nodes = {node_label: pos for node_label, pos in node_iter(network)}
 
     assert len(nodes) == 3
-    assert nodes["Sa"] == Point(1, 4)
-    assert nodes["L_245"] == Point(3, 11)
-    assert nodes["1"] == Point(1, 9)
+    assert nodes["Sa"] == Point(4, 1)
+    assert nodes["L_245"] == Point(11, 3)
+    assert nodes["1"] == Point(9, 1)
 
 
 def test_point_class():
