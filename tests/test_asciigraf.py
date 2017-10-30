@@ -1,7 +1,8 @@
 from collections import OrderedDict
+import pytest
 
 from asciigraf import graph_from_ascii
-from asciigraf.asciigraf import node_iter, Point
+from asciigraf.asciigraf import node_iter, Point, BadEdgeException
 
 
 def test_ascii_positions():
@@ -141,10 +142,10 @@ def test_some_more_node_names():
 
 def test_line_lengths():
     edge_data = graph_from_ascii("""
-            (13)           (10)
+            <13>           <10>
         n0-------------n1----------n2
                        |
-                       |  (3)
+                       |  <3>
                        |
                        n4
     """).edges(data=True)
@@ -154,3 +155,34 @@ def test_line_lengths():
         ("n1", "n2", OrderedDict([("length", 10)])),
         ("n1", "n4", OrderedDict([("length", 3)])),
     ]
+
+
+def test_line_labels():
+    graph = graph_from_ascii("""
+        A---(nuts)----B----(string)---C
+                      |
+                      |
+                      |
+                      D---(string)----E
+    """)
+
+    assert set(graph.nodes()) == {
+        "A", "B", "C", "D", "E"
+    }
+
+    assert set(graph.edges()) == {
+        ("A", "B"), ("B", "C"), ("B", "D"), ("D", "E")
+    }
+
+    assert graph.get_edge_data("A", "B")["label"] == "nuts"
+    assert graph.get_edge_data("A", "B")["length"] == 13
+
+    assert graph.get_edge_data("B", "C")["label"] == "string"
+    assert graph.get_edge_data("B", "C")["length"] == 15
+
+    with pytest.raises(KeyError):
+        assert graph.get_edge_data("B", "D")["label"] == ""
+    assert graph.get_edge_data("B", "D")["length"] == 3
+
+    assert graph.get_edge_data("D", "E")["label"] == "string"
+    assert graph.get_edge_data("D", "E")["length"] == 15
