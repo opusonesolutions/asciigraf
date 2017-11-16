@@ -24,7 +24,7 @@ setup(
     long_description=readme(),
     author="Opus One Solutions",
     author_email="rnd@opusonesolutions.com",
-    url="https://github.com/AnjoMan/asciigraf",
+    url="https://github.com/opusonesolutions/asciigraf",
     keywords=["graph", "network", "testing", "parser"],
     license="MIT",
     install_requires=[
