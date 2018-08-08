@@ -157,7 +157,7 @@ def test_line_lengths():
                        n4
     """).edges(data=True)
 
-    assert edge_data == [
+    assert list(edge_data) == [
         ("n0", "n1", OrderedDict([("length", 13)])),
         ("n1", "n2", OrderedDict([("length", 10)])),
         ("n1", "n4", OrderedDict([("length", 3)])),
