@@ -28,7 +28,7 @@ setup(
     keywords=["graph", "network", "testing", "parser"],
     license="MIT",
     install_requires=[
-        'networkx==1.11',
+        'networkx>=1.11',
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],
