@@ -5,7 +5,6 @@ python:
   - "3.4"
   - "2.7"
 install:
-  - pip install -e .[test]
   - pip install tox
 script:
   - tox
