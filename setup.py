@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="asciigraf",
-    version="0.3.0",
+    version="0.4.0",
     packages=["asciigraf"],
     description="A python library for making ascii-art into network graphs.",
     classifiers=[
@@ -28,7 +28,7 @@ setup(
     keywords=["graph", "network", "testing", "parser"],
     license="MIT",
     install_requires=[
-        'networkx==1.11',
+        'networkx>=1.11',
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],

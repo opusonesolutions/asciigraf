@@ -5,12 +5,8 @@ python:
   - "3.4"
   - "2.7"
 install:
-  - python setup.py install
-  - pip install coveralls pytest-cov
+  - pip install tox
 script:
-  - pytest --cov-report term-missing --cov=asciigraf tests/
+  - tox
 after_success:
   - coveralls
-branches:
-  only:
-    - master
