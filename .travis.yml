@@ -10,3 +10,12 @@ script:
   - tox
 after_success:
   - coveralls
+before_deploy:
+  - echo $CI_COMMIT_TAG > ascii_cim/VERSION
+deploy:
+  provider: pypi
+  on:
+    tags: true
+  user: opusone
+  password:
+    secure: XTQJLPGnlkvJdGizMc8ZT9BldUghPw14BACJBr1Uzb1S2H9M+fzD12YwgWVZwHtYzPgAr/v6EaIM5ynDUteTyqCPSbZGvjaDcmjZfS/QFQ4iwMBSe9z4fk/GD5JQZ6pl0tvH/sb587STqhxN3MtCDfC9FCIM08wIkX7cLn//oalZRIqbtKTXPVqN6H0A1l0Tdlbk+TLEXxmbMIOdoFVhKEIYfkub7hVX4T+Jh1UI8+FUQUvUXp6EjUABvo85P9JfD1Xr2hJ9wK3sHCcNPzjvtRfqN6DkVPltoO0ZnqZMkFK78kW2m0zXEKQTUu2pyHaU+FzqIE7UKYD8uEECHl6ir1sRNKvRApE4vBl/UubHuKdEI0VvXy5a3019oocoiqMltaQjrU0Vk8vf6mEZeFRp/dbZD2DJbPQQ3mrGeFYYEAZ3zM3yWicPmPO4U6Kgy+tl+VCSdhv3HNiFLKC3nsRRKJD6LQTUTi49iIGRDpMZhvQSiO+q9/n1vtKFJr8v2yYPegVLtuipluNIhTz5mtjs++jYrRFnRPvXqzUVWIs7MihkG0mXlh1G1PF+cNuwGeR/Vk5eAxfD9OV+M9wOvVjy3qVEmk159v6QMPL6HyMu0ATHATUrOqFI2mbuiDJTXO38X2OlpigoS/MqeuaavBpdcGWHpfU0jsSijQG5LCUXUiQ=
