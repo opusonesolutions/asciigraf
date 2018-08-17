@@ -14,6 +14,9 @@ setup(
     name="asciigraf",
     version=version,
     packages=["asciigraf"],
+    package_data={
+        '': ['VERSION']
+    },
     description="A python library for making ascii-art into network graphs.",
     classifiers=[
         "Development Status :: 3 - Alpha",
