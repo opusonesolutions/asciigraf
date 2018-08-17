@@ -12,9 +12,10 @@ jobs:
       script: tox
       after_success: coveralls
     - stage: deploy
+      install: skip
+      script: skip
       before_deploy: echo $CI_COMMIT_TAG > ascii_cim/VERSION
       deploy:
-        script: skip
         provider: pypi
         on:
           tags: true
