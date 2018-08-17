@@ -5,6 +5,7 @@ python:
   - "3.4"
   - "2.7"
 install: skip
+script: skip
 
 jobs:
   include:
