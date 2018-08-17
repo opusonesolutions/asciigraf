@@ -1,4 +1,8 @@
+import os.path
 from setuptools import setup
+
+thisdir = os.path.abspath(os.path.dirname(__file__))
+version = open(os.path.join(thisdir, 'asciigraf', 'VERSION')).read().strip()
 
 
 def readme():
@@ -8,8 +12,11 @@ def readme():
 
 setup(
     name="asciigraf",
-    version="0.4.0",
+    version=version,
     packages=["asciigraf"],
+    package_data={
+        '': ['VERSION']
+    },
     description="A python library for making ascii-art into network graphs.",
     classifiers=[
         "Development Status :: 3 - Alpha",
