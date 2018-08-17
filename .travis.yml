@@ -14,8 +14,6 @@ jobs:
       script: tox
       after_success: coveralls
     - stage: deploy
-      install: skip
-      script: skip
       before_deploy: echo $CI_COMMIT_TAG > asciigraf/VERSION
       python: "3.6"
       deploy:
