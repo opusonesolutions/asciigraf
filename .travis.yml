@@ -4,16 +4,16 @@ python:
   - "3.5"
   - "3.4"
   - "2.7"
-install: skip
-script: skip
+install: pip install tox
+script: tox
+after_success: coveralls
 
 jobs:
   include:
-    - stage: test
-      install: pip install tox
-      script: tox
-      after_success: coveralls
     - stage: deploy
+      install: skip
+      script: skip
+      after_success: skip
       before_deploy: echo $CI_COMMIT_TAG > asciigraf/VERSION
       python: "3.6"
       deploy:
