@@ -13,7 +13,7 @@ jobs:
     - stage: deploy
       install: skip
       script: true
-      after_success: skip
+      after_success: true
       before_deploy: echo $CI_COMMIT_TAG > asciigraf/VERSION
       python: "3.6"
       deploy:
