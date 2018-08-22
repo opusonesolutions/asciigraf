@@ -15,10 +15,10 @@ jobs:
       script: true
       after_success: true
       before_deploy: echo $TRAVIS_TAG > asciigraf/VERSION
-      skip_cleanup: true
       python: "3.6"
       deploy:
         provider: pypi
+        skip_cleanup: true
         on:
           tags: true
         user: opusone
