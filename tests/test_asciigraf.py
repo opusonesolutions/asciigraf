@@ -9,7 +9,7 @@ from collections import OrderedDict
 import pytest
 
 from asciigraf import graph_from_ascii
-from asciigraf.asciigraf import node_iter, Point, BadEdgeException
+from asciigraf.asciigraf import node_iter, Point
 
 
 def test_ascii_positions():
