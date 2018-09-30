@@ -5,4 +5,4 @@
 # LICENSE file in the root directory of this source tree.
 #############################################################################
 
-from .asciigraf import graph_from_ascii
+from .asciigraf import graph_from_ascii # noqa F401
