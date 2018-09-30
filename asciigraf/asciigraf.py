@@ -50,7 +50,7 @@ def graph_from_ascii(network_string):
 
     # Second pass to correct vertical labels. This needs to be
     # a correction so that the OrderedDict is correctly setup
-    for root_position, label in line_labels.items():
+    for root_position, label in list(line_labels.items()):
         is_vertical_label = any(
             above in edge_chars and edge_chars[above] == '|'
             for above in (
@@ -73,8 +73,7 @@ def graph_from_ascii(network_string):
                         del edge_chars[pos]
                 except KeyError:
                     # pass
-                    if pos in edge_chars:
-                        del edge_chars[pos]
+                    del edge_chars[pos]
 
     edge_char_to_edge_map = {}
     edges = []
