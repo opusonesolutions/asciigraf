@@ -41,12 +41,26 @@ def graph_from_ascii(network_string):
                 (pos, node_label) for pos in node_label_char_positions
             )
 
-    # we'll treat edge labels (e.g. "(my_label)") as consecutive "-" edge chars
-    edge_chars = OrderedDict(
-        (pos, (char if char in EDGE_CHARS else "-"))
-        for pos, char in char_iter(network_string)
-        if char in EDGE_CHARS or pos in line_label_char_positions
-    )
+    def get_label_char(pos):
+        above = pos + Point(0, -1)
+        if above in edge_chars:
+            # We have a case that looks like:
+            #   |
+            # (label)
+            #   |
+            return '|' if edge_chars[above] == '|' else '-'
+
+        # we'll treat edge labels (e.g. "(my_label)") as consecutive "-"
+        # edge chars
+        return '-'
+
+    edge_chars = OrderedDict()
+
+    for pos, char in char_iter(network_string):
+        if char in EDGE_CHARS:
+            edge_chars[pos] = char
+        elif pos in line_label_char_positions:
+            edge_chars[pos] = get_label_char(pos)
 
     edge_char_to_edge_map = {}
     edges = []
@@ -91,12 +105,19 @@ def graph_from_ascii(network_string):
         tuple(edge["nodes"]): len(edge["points"])
         for edge in edges if edge["nodes"]
     })
+
+    label_vals = {
+        tuple(edge_char_to_edge_map[pos]["nodes"]): label
+        for pos, label in line_labels.items()
+    }
+    print(label_vals)
+    print(line_labels)
+
+    import pprint
+    pprint.pprint(edge_char_to_edge_map)
     networkx.set_edge_attributes(
         ascii_graph, name="label",
-        values={
-            tuple(edge_char_to_edge_map[pos]["nodes"]): label
-            for pos, label in line_labels.items()
-        }
+        values=label_vals
     )
     return ascii_graph
 
