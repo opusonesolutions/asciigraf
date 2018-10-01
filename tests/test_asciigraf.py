@@ -214,3 +214,25 @@ def test_vertical_line_labels():
 
     assert graph.get_edge_data("A", "B")["label"] == "Vertical"
     assert graph.get_edge_data("A", "B")["length"] == 3
+
+
+def test_vertical_line_adjacent_labels():
+    graph = graph_from_ascii("""
+                C
+        A---D   |
+          (Vertical)
+                |
+                B
+    """)
+
+    assert set(graph.nodes()) == {
+        "A", "B", "C", "D"
+    }
+
+    assert set(graph.edges()) == {
+        ("A", "D"),
+        ("C", "B")
+    }
+
+    assert graph.get_edge_data("C", "B")["label"] == "Vertical"
+    assert graph.get_edge_data("C", "B")["length"] == 3
