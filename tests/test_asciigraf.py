@@ -29,7 +29,7 @@ def test_ascii_positions():
     assert graph.node["Nald33"]["position"] == Point(x=31, y=3)
 
 
-def test_node_iter_returns_label_and_position_of_feeder_nodes():
+def test_node_iter_returns_label_and_position_of_nodes():
     network = """
     Sa---1
         /
