@@ -60,7 +60,7 @@ def graph_from_ascii(network_string):
         )
 
         if is_vertical_label:
-            for i, char in enumerate(label):
+            for i in range(len(label) + 2):  # + 2 for the parentheses
                 pos = root_position + Point(i, 0)
                 above = pos + Point(0, -1)
 
