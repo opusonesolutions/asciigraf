@@ -44,18 +44,38 @@ def test_node_iter_returns_label_and_position_of_feeder_nodes():
     assert nodes["1"] == Point(9, 1)
 
 
-def test_point_class():
-    p1, p2 = Point(1, 2), Point(3, 4)
+@pytest.fixture
+def p12():
+    return Point(1, 2)
 
-    p3 = p1 + p2
-    assert p3.x == 4
-    assert p3.y == 6
-    assert p1 == Point(1, 2)
-    assert p1 in {p1, p2, p3}
 
-    x, y = p1
+@pytest.fixture
+def p34():
+    return Point(3, 4)
+
+
+def test_points_add_together(p12, p34):
+    p = p12 + p34
+    assert p.x == 4
+    assert p.y == 6
+
+
+def test_points_with_same_coords_are_equal(p12):
+    assert p12 == Point(1, 2)
+
+
+def test_points_can_be_in_sets(p12, p34):
+    assert p12 in {p12, p34}
+
+
+def test_points_iter_out_their_coords(p12):
+    x, y = p12
     assert x == 1
     assert y == 2
+
+
+def test_points_repr_their_coords(p12):
+    assert repr(p12) == 'Point(1, 2)'
 
 
 def test_converts_linear_network():
