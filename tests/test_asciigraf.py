@@ -9,7 +9,12 @@ from collections import OrderedDict
 import pytest
 
 from asciigraf import graph_from_ascii
-from asciigraf.asciigraf import node_iter, Point
+from asciigraf.asciigraf import (
+    Point,
+    node_iter,
+    TooManyNodesOnEdge,
+    TooFewNodesOnEdge,
+)
 
 
 def test_ascii_positions():
@@ -236,3 +241,16 @@ def test_vertical_line_adjacent_labels():
 
     assert graph.get_edge_data("C", "B")["label"] == "Vertical"
     assert graph.get_edge_data("C", "B")["length"] == 3
+
+
+def test_too_many_neighbours_triggers_bad_edge_exception():
+    with pytest.raises(TooManyNodesOnEdge):
+        graph_from_ascii("""
+               1---------------3
+                       |
+                       2         """)
+
+
+def test_missing_end_node_raises_missing_end_node_exception():
+    with pytest.raises(TooFewNodesOnEdge):
+        graph_from_ascii('1---')

@@ -103,10 +103,13 @@ def graph_from_ascii(network_string):
         for node, position in nodes
         if position not in line_label_char_positions
     )
-    ascii_graph.add_edges_from(
-        tuple(edge["nodes"])
-        for edge in edges if edge["nodes"]
-    )
+    for edge in edges:
+        if len(edge['nodes']) > 2:
+            raise TooManyNodesOnEdge(edge)
+        elif len(edge['nodes']) < 2:
+            raise TooFewNodesOnEdge(edge)
+        else:
+            ascii_graph.add_edge(*edge['nodes'])
     networkx.set_edge_attributes(ascii_graph, name="length", values={
         tuple(edge["nodes"]): len(edge["points"])
         for edge in edges if edge["nodes"]
@@ -160,3 +163,15 @@ def node_iter(network_string):
             yield (match.group(0), Point(match.start(), row))
 
 
+class TooManyNodesOnEdge(Exception):
+    def __init__(self, edge):
+        super(TooManyNodesOnEdge, self).__init__(
+            'Too many nodes ({}) found on edge starting at {!r}'.format(
+                len(edge['nodes']), edge['points'][0]))
+
+
+class TooFewNodesOnEdge(Exception):
+    def __init__(self, edge):
+        super(TooFewNodesOnEdge, self).__init__(
+            'Too few nodes ({}) found on edge starting at {!r}'.format(
+                len(edge['nodes']), edge['points'][0]))
