@@ -9,7 +9,12 @@ from collections import OrderedDict
 import pytest
 
 from asciigraf import graph_from_ascii
-from asciigraf.asciigraf import node_iter, Point
+from asciigraf.asciigraf import (
+    Point,
+    node_iter,
+    TooManyNodesOnEdge,
+    TooFewNodesOnEdge,
+)
 
 
 def test_ascii_positions():
@@ -24,14 +29,14 @@ def test_ascii_positions():
     assert graph.node["Nald33"]["position"] == Point(x=31, y=3)
 
 
-def test_node_iter_returns_label_and_position_of_feeder_nodes():
+def test_node_iter_returns_label_and_position_of_nodes():
     network = """
     Sa---1
         /
        |---L_245
     """
 
-    nodes = {node_label: pos for node_label, pos in node_iter(network)}
+    nodes = dict(node_iter(network))
 
     assert len(nodes) == 3
     assert nodes["Sa"] == Point(4, 1)
@@ -39,18 +44,38 @@ def test_node_iter_returns_label_and_position_of_feeder_nodes():
     assert nodes["1"] == Point(9, 1)
 
 
-def test_point_class():
-    p1, p2 = Point(1, 2), Point(3, 4)
+@pytest.fixture
+def p12():
+    return Point(1, 2)
 
-    p3 = p1 + p2
-    assert p3.x == 4
-    assert p3.y == 6
-    assert p1 == Point(1, 2)
-    assert p1 in {p1, p2, p3}
 
-    x, y = p1
+@pytest.fixture
+def p34():
+    return Point(3, 4)
+
+
+def test_points_add_together(p12, p34):
+    p = p12 + p34
+    assert p.x == 4
+    assert p.y == 6
+
+
+def test_points_with_same_coords_are_equal(p12):
+    assert p12 == Point(1, 2)
+
+
+def test_points_can_be_in_sets(p12, p34):
+    assert p12 in {p12, p34}
+
+
+def test_points_iter_out_their_coords(p12):
+    x, y = p12
     assert x == 1
     assert y == 2
+
+
+def test_points_repr_their_coords(p12):
+    assert repr(p12) == 'Point(1, 2)'
 
 
 def test_converts_linear_network():
@@ -236,3 +261,16 @@ def test_vertical_line_adjacent_labels():
 
     assert graph.get_edge_data("C", "B")["label"] == "Vertical"
     assert graph.get_edge_data("C", "B")["length"] == 3
+
+
+def test_too_many_neighbours_triggers_bad_edge_exception():
+    with pytest.raises(TooManyNodesOnEdge):
+        graph_from_ascii("""
+               1---------------3
+                       |
+                       2         """)
+
+
+def test_missing_end_node_raises_missing_end_node_exception():
+    with pytest.raises(TooFewNodesOnEdge):
+        graph_from_ascii('1---')

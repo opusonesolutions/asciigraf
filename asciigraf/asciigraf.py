@@ -15,10 +15,10 @@ def graph_from_ascii(network_string):
     """ Produces a networkx graph, based on an ascii drawing
         of a network
     """
-    EDGE_CHAR_NEIGHBOURS = {
+    EDGE_CHAR_NEIGHBOURS = {  # first point in tuple is the point parsed first
         "-":  [Point(-1, 0), Point(1, 0)],
         "\\": [Point(-1, -1),  Point(1, 1)],
-        "/":  [Point(-1, 1), Point(1, -1)],
+        "/":  [Point(1, -1), Point(-1, 1)],
         "|":  [Point(0, -1), Point(0, 1)]
     }
     EDGE_CHARS = {"\\", "-", "/", "|"}
@@ -60,7 +60,7 @@ def graph_from_ascii(network_string):
         )
 
         if is_vertical_label:
-            for i, char in enumerate(label):
+            for i in range(len(label) + 2):  # + 2 for the parentheses
                 pos = root_position + Point(i, 0)
                 above = pos + Point(0, -1)
 
@@ -80,22 +80,15 @@ def graph_from_ascii(network_string):
 
     for pos, char in edge_chars.items():
 
-        neighbors_in_edges = [
-            pos+pos_offset
-            for pos_offset in EDGE_CHAR_NEIGHBOURS[char]
-            if pos+pos_offset in edge_char_to_edge_map
-        ]  # assume for now these are all `-` characters
+        trailing_offset, _ = EDGE_CHAR_NEIGHBOURS[char]
+        neighbor = pos + trailing_offset
 
-        if len(neighbors_in_edges) == 1:  # Add this node to the edge
-            neighbor = neighbors_in_edges[0]
+        if neighbor in edge_char_to_edge_map:  # Add this node to the edge
             edge_char_to_edge_map[pos] = edge_char_to_edge_map[neighbor]
             edge_char_to_edge_map[pos]["points"].append(pos)
-        elif len(neighbors_in_edges) == 0:  # Make a new edge
+        else:  # Make a new edge
             edge_char_to_edge_map[pos] = dict(points=[pos], nodes=[])
             edges.append(edge_char_to_edge_map[pos])
-        else:
-            raise BadEdgeException("Edge character '{}' at <{}> has too"
-                                   "many neighbors.".format(char, pos))
 
         neighboring_nodes = [
             node_chars[pos+pos_offset]
@@ -110,10 +103,13 @@ def graph_from_ascii(network_string):
         for node, position in nodes
         if position not in line_label_char_positions
     )
-    ascii_graph.add_edges_from(
-        tuple(edge["nodes"])
-        for edge in edges if edge["nodes"]
-    )
+    for edge in edges:
+        if len(edge['nodes']) > 2:
+            raise TooManyNodesOnEdge(edge)
+        elif len(edge['nodes']) < 2:
+            raise TooFewNodesOnEdge(edge)
+        else:
+            ascii_graph.add_edge(*edge['nodes'])
     networkx.set_edge_attributes(ascii_graph, name="length", values={
         tuple(edge["nodes"]): len(edge["points"])
         for edge in edges if edge["nodes"]
@@ -167,5 +163,15 @@ def node_iter(network_string):
             yield (match.group(0), Point(match.start(), row))
 
 
-class BadEdgeException(Exception):
-    pass
+class TooManyNodesOnEdge(Exception):
+    def __init__(self, edge):
+        super(TooManyNodesOnEdge, self).__init__(
+            'Too many nodes ({}) found on edge starting at {!r}'.format(
+                len(edge['nodes']), edge['points'][0]))
+
+
+class TooFewNodesOnEdge(Exception):
+    def __init__(self, edge):
+        super(TooFewNodesOnEdge, self).__init__(
+            'Too few nodes ({}) found on edge starting at {!r}'.format(
+                len(edge['nodes']), edge['points'][0]))
