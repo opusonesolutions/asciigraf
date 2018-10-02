@@ -36,7 +36,7 @@ def test_node_iter_returns_label_and_position_of_feeder_nodes():
        |---L_245
     """
 
-    nodes = {node_label: pos for node_label, pos in node_iter(network)}
+    nodes = dict(node_iter(network))
 
     assert len(nodes) == 3
     assert nodes["Sa"] == Point(4, 1)
