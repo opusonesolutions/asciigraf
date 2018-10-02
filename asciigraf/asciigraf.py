@@ -41,12 +41,39 @@ def graph_from_ascii(network_string):
                 (pos, node_label) for pos in node_label_char_positions
             )
 
-    # we'll treat edge labels (e.g. "(my_label)") as consecutive "-" edge chars
+    # First pass to put edge chars in the map
     edge_chars = OrderedDict(
         (pos, (char if char in EDGE_CHARS else "-"))
         for pos, char in char_iter(network_string)
         if char in EDGE_CHARS or pos in line_label_char_positions
     )
+
+    # Second pass to correct vertical labels. This needs to be
+    # a correction so that the OrderedDict is correctly setup
+    for root_position, label in list(line_labels.items()):
+        is_vertical_label = any(
+            above in edge_chars and edge_chars[above] == '|'
+            for above in (
+                root_position + Point(i, -1)
+                for i, char in enumerate(label)
+            )
+        )
+
+        if is_vertical_label:
+            for i, char in enumerate(label):
+                pos = root_position + Point(i, 0)
+                above = pos + Point(0, -1)
+
+                try:
+                    if edge_chars[above] == '|':
+                        edge_chars[pos] = '|'
+                        del line_labels[root_position]
+                        line_labels[pos] = label
+                    else:
+                        del edge_chars[pos]
+                except KeyError:
+                    # pass
+                    del edge_chars[pos]
 
     edge_char_to_edge_map = {}
     edges = []
