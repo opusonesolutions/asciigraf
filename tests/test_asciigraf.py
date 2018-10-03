@@ -60,6 +60,32 @@ def test_points_add_together(p12, p34):
     assert p.y == 6
 
 
+def test_points_subtract(p12, p34):
+    p = p12 - p34
+    assert p.x == -2
+    assert p.y == -2
+
+
+def test_points_compare():
+    assert Point(1, 1) < Point(1, 2)
+    assert Point(1, 1) < Point(2, 1)
+
+
+def test_points_are_sortable():
+    starting_list = [Point(1, 2), Point(2, 1), Point(1, 1)]
+    sorted_list = sorted(starting_list)
+    assert sorted_list == [
+        Point(1, 1), Point(2, 1), Point(1, 2)
+    ]
+
+
+def test_sorting_commutes():
+    assert Point(33, 2) > Point(34, 1)
+    assert Point(34, 1) < Point(33, 2)
+    assert not Point(33, 2) < Point(34, 1)
+    assert not Point(34, 1) > Point(33, 2)
+
+
 def test_points_with_same_coords_are_equal(p12):
     assert p12 == Point(1, 2)
 
