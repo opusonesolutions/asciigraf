@@ -79,16 +79,28 @@ def graph_from_ascii(network_string):
     edges = []
 
     for pos, char in edge_chars.items():
-
-        trailing_offset, _ = EDGE_CHAR_NEIGHBOURS[char]
+        trailing_offset, leading_offset = EDGE_CHAR_NEIGHBOURS[char]
         neighbor = pos + trailing_offset
+        neighbor_2 = pos + leading_offset
 
-        if neighbor in edge_char_to_edge_map:  # Add this node to the edge
-            edge_char_to_edge_map[pos] = edge_char_to_edge_map[neighbor]
-            edge_char_to_edge_map[pos]["points"].append(pos)
-        else:  # Make a new edge
-            edge_char_to_edge_map[pos] = dict(points=[pos], nodes=[])
-            edges.append(edge_char_to_edge_map[pos])
+        # we can skip this position if a previous iteration already
+        # mapped the character to an edge
+        if pos not in edge_char_to_edge_map:
+            if neighbor in edge_char_to_edge_map:  # Add this node to the edge
+                edge_char_to_edge_map[pos] = edge_char_to_edge_map[neighbor]
+                edge_char_to_edge_map[pos]["points"].append(pos)
+            else:  # Make a new edge
+                edge_char_to_edge_map[pos] = dict(points=[pos], nodes=[])
+                edges.append(edge_char_to_edge_map[pos])
+
+            # we can look ahead at other neighbor and add it too -- this
+            # step allows us to solve a few extra corner types
+            if (
+                neighbor_2 not in edge_char_to_edge_map
+                and neighbor_2 in edge_chars
+            ):
+                edge_char_to_edge_map[neighbor_2] = edge_char_to_edge_map[pos]
+                edge_char_to_edge_map[pos]["points"].append(neighbor_2)
 
         neighboring_nodes = [
             node_chars[pos+pos_offset]
