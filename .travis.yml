@@ -4,6 +4,11 @@ python:
   - "3.5"
   - "3.4"
   - "2.7"
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
 install: pip install tox coveralls flake8
 script:
   - flake8
