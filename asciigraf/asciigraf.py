@@ -8,7 +8,7 @@
 from collections import OrderedDict
 import re
 
-from asciigraf.point import Point
+from .point import Point
 
 import networkx
 
