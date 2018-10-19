@@ -278,14 +278,22 @@ def test_vertical_line_adjacent_labels():
     assert graph.get_edge_data("C", "B")["length"] == 3
 
 
-def test_too_many_neighbours_triggers_bad_edge_exception():
+def test_too_many_neighbours_triggers_bad_edge_exception(caplog):
     with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii("""
                1---------------3
                        |
                        2         """)
 
+    assert str(e.value) == """Invalid edge at Point(23, 1):
+
+                      ---
+                       |"""
+
 
 def test_missing_end_node_raises_missing_end_node_exception():
     with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii('1---')
+
+    assert str(e.value) == """Invalid edge at Point(3, 0):
+  --"""
