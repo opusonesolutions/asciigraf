@@ -44,8 +44,6 @@ def test_node_iter_returns_label_and_position_of_nodes():
     assert nodes["1"] == Point(9, 1)
 
 
-
-
 def test_converts_linear_network():
     graph = graph_from_ascii(" A---B----C----D")
 
