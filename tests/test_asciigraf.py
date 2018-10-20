@@ -267,14 +267,17 @@ def test_line_labels():
     assert graph.get_edge_data("D", "E")["length"] == 15
 
 
-def test_vertical_line_labels():
+@pytest.mark.parametrize("label", [
+    'longlonglabel', 'short', 'l',
+])
+def test_vertical_line_labels(label):
     graph = graph_from_ascii("""
         A
         |
-      (Vertical)
+       ({label})
         |
         B
-    """)
+    """.format(label=label))
 
     assert set(graph.nodes()) == {
         "A", "B"
@@ -284,7 +287,7 @@ def test_vertical_line_labels():
         ("A", "B")
     }
 
-    assert graph.get_edge_data("A", "B")["label"] == "Vertical"
+    assert graph.get_edge_data("A", "B")["label"] == label
     assert graph.get_edge_data("A", "B")["length"] == 3
 
 
