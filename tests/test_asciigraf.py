@@ -271,13 +271,13 @@ def test_line_labels():
     'longlonglabel', 'short', 'l',
 ])
 def test_vertical_line_labels(label):
-    graph = graph_from_ascii(f"""
+    graph = graph_from_ascii("""
         A
         |
        ({label})
         |
         B
-    """)
+    """.format(label=label))
 
     assert set(graph.nodes()) == {
         "A", "B"
