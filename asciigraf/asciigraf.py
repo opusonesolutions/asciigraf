@@ -54,7 +54,7 @@ def graph_from_ascii(network_string):
         is_vertical_label = any(
             above in edge_chars and edge_chars[above] == '|'
             for above in (
-                root_position + Point(i, -1)
+                root_position + Point(i + 1, -1)
                 for i, char in enumerate(label)
             )
         )
