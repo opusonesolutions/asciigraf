@@ -24,6 +24,18 @@ class Point(object):
                 )
 
     def __lt__(self, other):
+        """Point instances are ordered by row and
+           then column.
+
+           e.g. in the following diagram,
+                        b
+                   a----|
+
+            if the points are ordered by position then we
+            can expect this edge to always be (b, a)
+            and not (a, b) based on reading the diagram like
+            a paragraph, left-to-right and then top-to-bottom.
+        """
         return self.y < other.y or (
             not self.y > other.y and
             self.x < other.x
