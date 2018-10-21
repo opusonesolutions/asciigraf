@@ -8,6 +8,8 @@
 from collections import OrderedDict
 import re
 
+from .point import Point
+
 import networkx
 
 
@@ -134,31 +136,6 @@ def graph_from_ascii(network_string):
         }
     )
     return ascii_graph
-
-
-class Point(object):
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
-
-    def __iter__(self):
-        for el in (self.x, self.y):
-            yield el
-
-    def __repr__(self):
-        return "Point({}, {})".format(self.x, self.y)
-
-    def __eq__(self, other):
-        return (type(self) == type(other) and
-                self.x == other.x and
-                self.y == other.y
-                )
-
-    def __hash__(self):
-        return hash((self.__class__, self.x, self.y))
 
 
 def char_iter(network_string):
