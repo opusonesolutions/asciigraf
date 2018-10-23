@@ -165,21 +165,22 @@ def patch_edge_chars_over_labels(labels, edge_chars):
         for i, char in enumerate(label)
     )
     for position, label_character in label_chars.items():
-        above = position + Point(0, -1)
-        below = position + Point(0, 1)
-        left = position + Point(-1, 0)
-        right = position + Point(1, 0)
+        def neighbour(offset):
+            return edge_chars.get(position + offset, "")
 
         if label_character == "(":
-            if edge_chars.get(left, "") == "-":
+            if neighbour(LEFT) == "-":
                 edge_chars[position] = "-"
         elif label_character == ")":
-            if edge_chars.get(right, "") == "-":
+            if neighbour(RIGHT) == "-":
                 edge_chars[position] = "-"
-        elif edge_chars.get(above, "") == "|" and edge_chars.get(below, "") == "|":
+        elif neighbour(ABOVE) == "|" and neighbour(BELOW) == "|":
             edge_chars[position] = "|"
         else:
-            if edge_chars.get(left, "") == '-':
+            # since we process each label left->right, we'll have already
+            # patched characters to the left of our position during previous
+            # iterations of the loop
+            if neighbour(LEFT) == '-':
                 edge_chars[position] = '-'
 
 
