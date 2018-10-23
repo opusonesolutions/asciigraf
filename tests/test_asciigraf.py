@@ -183,6 +183,21 @@ def test_S_bend():
     assert set(graph.edges()) == {("0", "2")}
 
 
+def test_adjacent_edges():
+    graph = graph_from_ascii("""
+        a------b
+        c----------d
+    """)
+
+    assert set(graph.nodes()) == {
+        "a", "b", "c", "d"
+    }
+    assert set(graph.edges()) == {
+        ("a", "b"),
+        ("c", "d"),
+    }
+
+
 def test_some_more_node_names():
     graph = graph_from_ascii(r"""
           s---p----1---nx
