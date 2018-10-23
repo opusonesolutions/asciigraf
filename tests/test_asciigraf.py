@@ -283,14 +283,14 @@ def test_too_many_neighbours_triggers_bad_edge_exception(caplog):
         graph_from_ascii("""
                1---------------3
                        |
-                       2         """)
+                       2""")
 
     assert str(e.value) == """Too many nodes:
 Network String:
 
                1---------------3
                        |
-                       2         
+                       2
 Affected Edge:
 
                 ---------------
