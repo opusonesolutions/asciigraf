@@ -311,7 +311,7 @@ Network String:
                        2
 Affected Edge:
 
-                ---------------
+                      ---
                        |"""
 
 
@@ -323,4 +323,4 @@ def test_missing_end_node_raises_missing_end_node_exception():
 Network String:
 1---
 Affected Edge:
- ---"""
+  --"""
