@@ -75,6 +75,16 @@ def graph_from_ascii(network_string):
         edge_char_to_edge_map[pos]["nodes"] += neighboring_nodes
 
     # Make the networkx graph
+    for edge in edges:
+        edge_map = {pos: edge_chars[pos] for pos in edge["points"]}
+        if len(edge['nodes']) > 2:
+            raise InvalidEdgeError(
+                f"Too many nodes:\nNetwork String:\n"
+                f"{network_string}\nAffected Edge:\n{draw(edge_map)}")
+        elif len(edge['nodes']) < 2:
+            raise InvalidEdgeError(
+                f"Too few nodes:\nNetwork String:\n"
+                f"{network_string}\nAffected Edge:\n{draw(edge_map)}")
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
         (node, {"position": position}) for position, node in nodes.items()
@@ -83,11 +93,6 @@ def graph_from_ascii(network_string):
         (*edge['nodes'], {"length": len(edge["points"])})
         for edge in edges
     )
-    for edge in edges:
-        if len(edge['nodes']) > 2:
-            raise TooManyNodesOnEdge(edge)
-        elif len(edge['nodes']) < 2:
-            raise TooFewNodesOnEdge(edge)
     networkx.set_edge_attributes(
         ascii_graph, name="label",
         values={
@@ -234,18 +239,8 @@ def node_iter(network_string):
             yield (match.group(0), Point(match.start(), row))
 
 
-class TooManyNodesOnEdge(Exception):
-    def __init__(self, edge):
-        super(TooManyNodesOnEdge, self).__init__(
-            'Too many nodes ({}) found on edge starting at {!r}'.format(
-                len(edge['nodes']), edge['points'][0]))
-
-
-class TooFewNodesOnEdge(Exception):
-    def __init__(self, edge):
-        super(TooFewNodesOnEdge, self).__init__(
-            'Too few nodes ({}) found on edge starting at {!r}'.format(
-                len(edge['nodes']), edge['points'][0]))
+class InvalidEdgeError(Exception):
+    """ Raise this when an edge is wrongly drawn """
 
 
 def draw(char_map, node_chars=None):

@@ -11,8 +11,7 @@ import pytest
 from asciigraf import graph_from_ascii
 from asciigraf.asciigraf import (
     node_iter,
-    TooManyNodesOnEdge,
-    TooFewNodesOnEdge,
+    InvalidEdgeError,
 )
 from asciigraf.point import Point
 
@@ -280,7 +279,7 @@ def test_vertical_line_adjacent_labels():
 
 
 def test_too_many_neighbours_triggers_bad_edge_exception():
-    with pytest.raises(TooManyNodesOnEdge):
+    with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii("""
                1---------------3
                        |
@@ -288,5 +287,5 @@ def test_too_many_neighbours_triggers_bad_edge_exception():
 
 
 def test_missing_end_node_raises_missing_end_node_exception():
-    with pytest.raises(TooFewNodesOnEdge):
+    with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii('1---')
