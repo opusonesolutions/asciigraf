@@ -6,6 +6,7 @@
 #############################################################################
 
 from collections import OrderedDict
+from itertools import chain
 import re
 
 from .point import Point
@@ -91,7 +92,7 @@ def graph_from_ascii(network_string):
         (node, {"position": position}) for position, node in nodes.items()
     )
     ascii_graph.add_edges_from(
-        (*edge['nodes'], {"length": len(edge["points"])})
+        (edge['nodes'][0], edge['nodes'][1], {"length": len(edge["points"])})
         for edge in edges
     )
     networkx.set_edge_attributes(
@@ -259,9 +260,9 @@ def draw(char_map, node_chars=None):
             if position < node_start_map[node_label]:
                 node_start_map[node_label] = position
 
-    all_chars = sorted(
-        [*{val: key for key, val in node_start_map.items()}.items(),
-         *char_map.items()],
+    all_chars = sorted(chain(
+        ((val, key) for key, val in node_start_map.items()),
+        char_map.items()),
         key=lambda x: x[0]
     )
 
