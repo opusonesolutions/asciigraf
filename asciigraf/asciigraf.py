@@ -13,17 +13,27 @@ from .point import Point
 import networkx
 
 
+LEFT, RIGHT = Point(-1, 0), Point(1, 0)
+ABOVE, BELOW = Point(0, -1), Point(0, 1)
+TOP_LEFT, BOTTOM_RIGHT = Point(-1, -1), Point(1, 1)
+BOTTOM_LEFT, TOP_RIGHT = Point(1, -1), Point(-1, 1)
+
+
+EDGE_CHARS = {"\\", "-", "/", "|"}
+EDGE_CHAR_NEIGHBOURS = {  # first point in tuple is the point parsed first
+    "-":  [LEFT, RIGHT],
+    "\\": [TOP_LEFT, BOTTOM_RIGHT],
+    "/":  [BOTTOM_LEFT, TOP_RIGHT],
+    "|":  [ABOVE, BELOW]
+}
+
+
 def graph_from_ascii(network_string):
     """ Produces a networkx graph, based on an ascii drawing
         of a network
     """
-    EDGE_CHAR_NEIGHBOURS = {  # first point in tuple is the point parsed first
-        "-":  [Point(-1, 0), Point(1, 0)],
-        "\\": [Point(-1, -1),  Point(1, 1)],
-        "/":  [Point(1, -1), Point(-1, 1)],
-        "|":  [Point(0, -1), Point(0, 1)]
-    }
-    EDGE_CHARS = {"\\", "-", "/", "|"}
+
+    # get the nodes from network string
     nodes = list(node_iter(network_string))
 
     node_chars = OrderedDict()
