@@ -32,64 +32,17 @@ def graph_from_ascii(network_string):
     """ Produces a networkx graph, based on an ascii drawing
         of a network
     """
+    nodes, labels = get_nodes_and_labels(network_string)
+    edge_chars = get_edge_chars(network_string)
 
-    # get the nodes from network string
-    nodes = list(node_iter(network_string))
+    patch_edge_chars_over_labels(labels, edge_chars)
+    edge_chars = OrderedDict(sorted(edge_chars.items()))
 
-    node_chars = OrderedDict()
-    line_labels = {}
-    line_label_char_positions = set()
-    for node_label, root_position in nodes:
-        node_label_char_positions = {
-            root_position + Point(offset, 0)
-            for offset, _ in enumerate(node_label)
-        }
-        if node_label.startswith("(") and node_label.endswith(")"):
-            label_value = node_label[1:-1]
-            line_labels[root_position] = label_value
-            line_label_char_positions |= node_label_char_positions
-        else:
-            node_chars.update(
-                (pos, node_label) for pos in node_label_char_positions
-            )
+    node_char_to_node = map_text_chars_to_text(nodes)
+    label_char_to_label = map_text_chars_to_text(labels)
 
-    # First pass to put edge chars in the map
-    edge_chars = OrderedDict(
-        (pos, (char if char in EDGE_CHARS else "-"))
-        for pos, char in char_iter(network_string)
-        if char in EDGE_CHARS or pos in line_label_char_positions
-    )
-
-    # Second pass to correct vertical labels. This needs to be
-    # a correction so that the OrderedDict is correctly setup
-    for root_position, label in list(line_labels.items()):
-        is_vertical_label = any(
-            above in edge_chars and edge_chars[above] == '|'
-            for above in (
-                root_position + Point(i + 1, -1)
-                for i, char in enumerate(label)
-            )
-        )
-
-        if is_vertical_label:
-            for i in range(len(label) + 2):  # + 2 for the parentheses
-                pos = root_position + Point(i, 0)
-                above = pos + Point(0, -1)
-
-                try:
-                    if edge_chars[above] == '|':
-                        edge_chars[pos] = '|'
-                        del line_labels[root_position]
-                        line_labels[pos] = label
-                    else:
-                        del edge_chars[pos]
-                except KeyError:
-                    # pass
-                    del edge_chars[pos]
-
-    edge_char_to_edge_map = {}
+    edge_char_to_edge_map = {}  # {Point -> {"points": [], "nodes": []}}
     edges = []
-
     for pos, char in edge_chars.items():
         trailing_offset, leading_offset = EDGE_CHAR_NEIGHBOURS[char]
         neighbor = pos + trailing_offset
@@ -115,48 +68,167 @@ def graph_from_ascii(network_string):
                 edge_char_to_edge_map[pos]["points"].append(neighbor_2)
 
         neighboring_nodes = [
-            node_chars[pos+pos_offset]
+            node_char_to_node[pos+pos_offset]
             for pos_offset in EDGE_CHAR_NEIGHBOURS[char]
-            if pos+pos_offset in node_chars
+            if pos+pos_offset in node_char_to_node
         ]
         edge_char_to_edge_map[pos]["nodes"] += neighboring_nodes
 
+    # Make the networkx graph
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
-        (node, {"position": position})
-        for node, position in nodes
-        if position not in line_label_char_positions
+        (node, {"position": position}) for position, node in nodes.items()
+    )
+    ascii_graph.add_edges_from(
+        (*edge['nodes'], {"length": len(edge["points"])})
+        for edge in edges
     )
     for edge in edges:
         if len(edge['nodes']) > 2:
             raise TooManyNodesOnEdge(edge)
         elif len(edge['nodes']) < 2:
             raise TooFewNodesOnEdge(edge)
-        else:
-            ascii_graph.add_edge(*edge['nodes'])
-    networkx.set_edge_attributes(ascii_graph, name="length", values={
-        tuple(edge["nodes"]): len(edge["points"])
-        for edge in edges if edge["nodes"]
-    })
     networkx.set_edge_attributes(
         ascii_graph, name="label",
         values={
-            tuple(edge_char_to_edge_map[pos]["nodes"]): label
-            for pos, label in line_labels.items()
+            tuple(edge_char_to_edge_map[pos]["nodes"]): label[1:-1]
+            for pos, label in label_char_to_label.items()
+            if pos in edge_char_to_edge_map
         }
     )
     return ascii_graph
 
 
-def char_iter(network_string):
-    return (
+def get_nodes_and_labels(network_string):
+    """ Map the root position of nodes and labels
+        to the node / label text.
+
+        e.g. map_nodes_and_labels("  n1--(label1)--n2  ") -> {
+            Point(2, 0): "n1",
+            Point(6, 0): "(label1)",
+            Point(16, 0): "n2",
+        }
+    """
+    ascii_nodes = list(node_iter(network_string))
+    nodes = OrderedDict()  # of the form {Point -> 'node_name'}
+    labels = OrderedDict()  # of the form {Point -> 'label'}
+    for ascii_label, root_position in ascii_nodes:
+        if ascii_label.startswith("(") and ascii_label.endswith(")"):
+            labels[root_position] = ascii_label
+        else:
+            nodes[root_position] = ascii_label
+    return nodes, labels
+
+
+def get_edge_chars(network_string):
+    """ Map positions in the string to edge chars
+
+        e.g. get_edge_chars("  --|   ") -> {
+            Point(3,0): "-",
+            Point(4,0): "-",
+            Point(5,0): "|",
+        }
+    """
+    return OrderedDict(
         (Point(col, row), char)
         for row, line in enumerate(network_string.split("\n"))
         for col, char in enumerate(line)
+        if char in EDGE_CHARS
+    )
+
+
+def patch_edge_chars_over_labels(labels, edge_chars):
+    """ Adds in edge chars where labels crossed an edge
+
+        e.g.
+
+        ---(horizontal_label)---
+
+                becomes
+
+        ------------------------
+
+        e.g.
+                |                         |
+          (vertical_label)   becomes      |
+                |                         |
+    """
+
+    label_chars = OrderedDict(
+        (root_position + Point(i, 0), char)
+        for root_position, label in labels.items()
+        for i, char in enumerate(label)
+    )
+    for position, label_character in label_chars.items():
+        above = position + Point(0, -1)
+        below = position + Point(0, 1)
+        left = position + Point(-1, 0)
+        right = position + Point(1, 0)
+
+        if label_character == "(":
+            if edge_chars.get(left, "") == "-":
+                edge_chars[position] = "-"
+        elif label_character == ")":
+            if edge_chars.get(right, "") == "-":
+                edge_chars[position] = "-"
+        elif edge_chars.get(above, "") == "|" and edge_chars.get(below, "") == "|":
+            edge_chars[position] = "|"
+        else:
+            if edge_chars.get(left, "") == '-':
+                edge_chars[position] = '-'
+
+
+def char_map(text, root_position):
+        """ Maps the position of each character in 'text'
+
+            e.g.
+
+            char_map("foo", root_position=Point(20, 2)) -> {
+                Point(20, 2) -> 'f',
+                Point(21, 2) -> 'o',
+                Point(22, 2) -> 'o',
+            }
+        """
+        return OrderedDict(
+            (Point(root_position.x+x, root_position.y), char)
+            for x, char in enumerate(text)
         )
 
 
+def map_text_chars_to_text(text_map):
+    """ Maps characters in text elements to the text elements
+
+        e.g.
+
+        text_map = {
+            Point(1, 2): 'foo',
+            Point(3, 4):  'bar',
+        }
+
+        map_text_chars_to_text(text_map) -> {
+            Point(1, 2): 'foo',
+            Point(2, 2): 'foo',
+            Point(3, 2): 'foo',
+            Point(3, 4): 'bar',
+            Point(4, 4): 'bar',
+            Point(5, 4): 'bar',
+        }
+    """
+    return OrderedDict(
+        (position, text)
+        for root_position, text in text_map.items()
+        for position, _ in char_map(text, root_position).items()
+    )
+
+
 def node_iter(network_string):
+    """ Yields the starting position and value of any nodes in
+        the ascii network string
+
+        e.g. node_iter("node1----(label1)") -> (
+            (Point(0,0), node1), (Point(9,0), (label1))
+        )
+    """
     for row, line in enumerate(network_string.split("\n")):
         for match in re.finditer('\(?([0-9A-Za-z_{}]+)\)?', line):
             yield (match.group(0), Point(match.start(), row))
