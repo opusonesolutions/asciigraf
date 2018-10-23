@@ -249,11 +249,11 @@ class InvalidEdgeError(Exception):
     """ Raise this when an edge is wrongly drawn """
 
 
-def draw(char_map, node_chars=None):
+def draw(edge_chars, nodes=None):
     """ Redraws a char_map and node_char map """
-    node_chars = node_chars or {}
+    nodes = nodes or {}
     node_start_map = OrderedDict()
-    for position, node_label in node_chars.items():
+    for position, node_label in nodes.items():
         if node_label not in node_start_map:
             node_start_map[node_label] = position
         else:
@@ -262,7 +262,7 @@ def draw(char_map, node_chars=None):
 
     all_chars = sorted(chain(
         ((val, key) for key, val in node_start_map.items()),
-        char_map.items()),
+        edge_chars.items()),
         key=lambda x: x[0]
     )
 
