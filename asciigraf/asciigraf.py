@@ -246,3 +246,34 @@ class TooFewNodesOnEdge(Exception):
         super(TooFewNodesOnEdge, self).__init__(
             'Too few nodes ({}) found on edge starting at {!r}'.format(
                 len(edge['nodes']), edge['points'][0]))
+
+
+def draw(char_map, node_chars=None):
+    """ Redraws a char_map and node_char map """
+    node_chars = node_chars or {}
+    node_start_map = OrderedDict()
+    for position, node_label in node_chars.items():
+        if node_label not in node_start_map:
+            node_start_map[node_label] = position
+        else:
+            if position < node_start_map[node_label]:
+                node_start_map[node_label] = position
+
+    all_chars = sorted(
+        [*{val: key for key, val in node_start_map.items()}.items(),
+         *char_map.items()],
+        key=lambda x: x[0]
+    )
+
+    string = ""
+    cursor = Point(0, 0)
+    for position, label in all_chars:
+        if cursor.y < position.y:
+            string += '\n' * (position.y - cursor.y)
+            cursor = Point(0, position.y)
+        if cursor.x < position.x:
+            string += ' ' * (position.x - cursor.x)
+            cursor = Point(*position)
+        string += label
+        cursor.x += len(label)
+    return string
