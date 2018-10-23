@@ -78,12 +78,14 @@ def graph_from_ascii(network_string):
         edge_map = {pos: edge_chars[pos] for pos in edge["points"]}
         if len(edge['nodes']) > 2:
             raise InvalidEdgeError(
-                f"Too many nodes:\nNetwork String:\n"
-                f"{network_string}\nAffected Edge:\n{draw(edge_map)}")
+                "Too many nodes:\nNetwork String:\n" +
+                "{}\nAffected Edge:\n{}".format(network_string, draw(edge_map))
+            )
         elif len(edge['nodes']) < 2:
             raise InvalidEdgeError(
-                f"Too few nodes:\nNetwork String:\n"
-                f"{network_string}\nAffected Edge:\n{draw(edge_map)}")
+                "Too few nodes:\nNetwork String:\n" +
+                "{}\nAffected Edge:\n{}".format(network_string, draw(edge_map))
+            )
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
         (node, {"position": position}) for position, node in nodes.items()
