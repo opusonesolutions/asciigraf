@@ -285,9 +285,15 @@ def test_too_many_neighbours_triggers_bad_edge_exception(caplog):
                        |
                        2         """)
 
-    assert str(e.value) == """Invalid edge at Point(23, 1):
+    assert str(e.value) == """Too many nodes:
+Network String:
 
-                      ---
+               1---------------3
+                       |
+                       2         
+Affected Edge:
+
+                ---------------
                        |"""
 
 
@@ -295,5 +301,8 @@ def test_missing_end_node_raises_missing_end_node_exception():
     with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii('1---')
 
-    assert str(e.value) == """Invalid edge at Point(3, 0):
-  --"""
+    assert str(e.value) == """Too few nodes:
+Network String:
+1---
+Affected Edge:
+ ---"""
