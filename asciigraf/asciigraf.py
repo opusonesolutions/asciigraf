@@ -35,8 +35,7 @@ def graph_from_ascii(network_string):
     nodes, labels = get_nodes_and_labels(network_string)
     edge_chars = get_edge_chars(network_string)
 
-    patch_edge_chars_over_labels(labels, edge_chars)
-    edge_chars = OrderedDict(sorted(edge_chars.items()))
+    edge_chars = patch_edge_chars_over_labels(labels, edge_chars)
 
     node_char_to_node = map_text_chars_to_text(nodes)
     label_char_to_label = map_text_chars_to_text(labels)
@@ -128,7 +127,7 @@ def get_nodes_and_labels(network_string):
 def get_edge_chars(network_string):
     """ Map positions in the string to edge chars
 
-        e.g. get_edge_chars("  --|   ") -> {
+        e.g. get_edge_chars("   --|   ") -> {
             Point(3,0): "-",
             Point(4,0): "-",
             Point(5,0): "|",
@@ -159,6 +158,7 @@ def patch_edge_chars_over_labels(labels, edge_chars):
                 |                         |
     """
 
+    edge_chars = dict(edge_chars)  # so we don't mutate
     label_chars = OrderedDict(
         (root_position + Point(i, 0), char)
         for root_position, label in labels.items()
@@ -182,6 +182,8 @@ def patch_edge_chars_over_labels(labels, edge_chars):
             # iterations of the loop
             if neighbour(LEFT) == '-':
                 edge_chars[position] = '-'
+
+    return OrderedDict(sorted(edge_chars.items()))
 
 
 def char_map(text, root_position):
