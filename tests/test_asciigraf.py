@@ -339,3 +339,28 @@ Network String:
 1---
 Affected Edge:
   --"""
+
+
+def test_bad_label_triggers_exception(caplog):
+    with pytest.raises(InvalidEdgeError) as e:
+        graph_from_ascii("""
+            n1
+            |
+      n2--(label)
+            |
+            n3""")
+
+    assert str(e.value) == """Too many nodes:
+Network String:
+
+            n1
+            |
+      n2--(label)
+            |
+            n3
+Affected Edge:
+
+
+            |
+           -|
+            |"""
