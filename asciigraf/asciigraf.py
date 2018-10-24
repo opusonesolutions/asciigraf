@@ -140,7 +140,7 @@ def graph_from_ascii(network_string):
         if pos in edge_char_to_edge_map:
             # We only expect to get past this continue for one char
             # in each edge -- if the above condition is false, we'll
-            # do the below code and all the characters that are in
+            # process all the chars in the edge within one loop iteration
             continue
 
         new_edge = build_edge_from_position(pos)
@@ -149,6 +149,7 @@ def graph_from_ascii(network_string):
             edge_char_to_edge_map[position] = new_edge
         edges.append(new_edge)
 
+    # Build networkx datastructure
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
         (node, {"position": position}) for position, node in nodes.items()
