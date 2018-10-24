@@ -241,7 +241,7 @@ def node_iter(network_string):
         )
     """
     for row, line in enumerate(network_string.split("\n")):
-        for match in re.finditer('\(?([0-9A-Za-z_{}]+)\)?', line):
+        for match in re.finditer(r'\(?([0-9A-Za-z_{}]+)\)?', line):
             yield (match.group(0), Point(match.start(), row))
 
 

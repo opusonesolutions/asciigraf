@@ -89,18 +89,18 @@ def test_converts_other_kind_of_down_left_angle():
 
 
 def test_converts_escaped_down_obtuse_angle():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
             1--------
-                     \\
+                     \
                       2      """)
     assert set(graph.nodes()) == {"1", "2"}
     assert set(graph.edges()) == {("1", "2")}
 
 
 def test_converts_other_kind_of_escaped_down_obtuse_angle():
-    graph = graph_from_ascii("""
-            1-------\\
-                     \\
+    graph = graph_from_ascii(r"""
+            1-------\
+                     \
                       2      """)
     assert set(graph.nodes()) == {"1", "2"}
     assert set(graph.edges()) == {("1", "2")}
@@ -125,7 +125,7 @@ def test_converts_other_kind_of_down_acute_angle():
 
 
 def test_converts_meshed_network():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
           0----1-------2
                 \     /
                  3---4       """)
@@ -140,7 +140,7 @@ def test_converts_meshed_network():
 
 
 def test_node_ordering():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
           0----3-------2
                 \     /
                  1---4
@@ -166,7 +166,7 @@ def test_S_bend():
 
 
 def test_some_more_node_names():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
           s---p----1---nx
          /    |        |
         /     |        0---f
