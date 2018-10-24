@@ -149,19 +149,6 @@ def graph_from_ascii(network_string):
             edge_char_to_edge_map[position] = new_edge
         edges.append(new_edge)
 
-    # Make the networkx graph
-    for edge in edges:
-        edge_map = {pos: edge_chars[pos] for pos in edge["points"]}
-        if len(edge['nodes']) > 2:
-            raise InvalidEdgeError(
-                "Too many nodes:\nNetwork String:\n" +
-                "{}\nAffected Edge:\n{}".format(network_string, draw(edge_map))
-            )
-        elif len(edge['nodes']) < 2:
-            raise InvalidEdgeError(
-                "Too few nodes:\nNetwork String:\n" +
-                "{}\nAffected Edge:\n{}".format(network_string, draw(edge_map))
-            )
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
         (node, {"position": position}) for position, node in nodes.items()
