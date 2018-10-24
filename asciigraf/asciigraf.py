@@ -121,8 +121,6 @@ def graph_from_ascii(network_string):
             reversed(follow_edge(pos, neighbour_1)), (pos, ),
             follow_edge(pos, neighbour_2)
         ))
-        if positions[0] > positions[-1]:
-            positions = tuple(reversed(positions))
 
         new_edge = dict(
             points=positions[1:-1],

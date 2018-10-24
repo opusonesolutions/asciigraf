@@ -142,6 +142,42 @@ def test_converts_the_other_kind_of_up_right_angle():
     assert set(graph.edges()) == {("1", "2")}
 
 
+def test_converts_left_down_angle():
+    graph = graph_from_ascii("""
+         ------2
+         |
+         1
+    """)
+
+    assert set(graph.nodes()) == {"2", "1"}
+    assert set(graph.edges()) == {("2", "1")}
+
+
+def test_u_bend():
+    graph = graph_from_ascii("""
+         ------|
+         |     |
+         1     |
+        2------|
+    """)
+
+    assert set(graph.nodes()) == {"1", "2"}
+    assert set(graph.edges()) == {("1", "2")}
+
+
+def test_doubl_down_left_angle():
+    graph = graph_from_ascii("""
+         ------2
+         |
+         |
+        --
+    1---|
+    """)
+
+    assert set(graph.nodes()) == {"2", "1"}
+    assert set(graph.edges()) == {("2", "1")}
+
+
 def test_converts_meshed_network():
     graph = graph_from_ascii(r"""
           0----1-------2
