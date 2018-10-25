@@ -117,7 +117,7 @@ def build_networkx_graph(nodes, edges):
     # Build networkx datastructure
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
-        (node, {"position": position}) for position, node in nodes.items()
+        (node, {"position": tuple(pos)}) for pos, node in nodes.items()
     )
     ascii_graph.add_edges_from(
         (edge['nodes'][0], edge['nodes'][1], {"length": len(edge["points"])})
