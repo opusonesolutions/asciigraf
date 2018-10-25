@@ -81,7 +81,7 @@ def graph_from_ascii(network_string):
         # second, consider chars to which this char could be a neighbour
         # (e.g. if the char below is a |, our char neighbours it)
         for offset, valid_char in ABUTTING.items():
-            if edge_chars.get(pos + offset, " ") == valid_char:
+            if edge_chars.get(pos + offset) == valid_char:
                 neighbouring_positions |= {pos + offset}
 
         # every edge char should end up with exactly 2 neighbours, or
@@ -229,7 +229,7 @@ def patch_edge_chars_over_labels(labels, edge_chars):
     )
     for position, label_character in label_chars.items():
         def neighbour(offset):
-            return edge_chars.get(position + offset, "")
+            return edge_chars.get(position + offset)
 
         if label_character == "(":
             if neighbour(LEFT) == "-":
