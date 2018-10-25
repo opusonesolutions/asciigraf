@@ -63,10 +63,10 @@ def graph_from_ascii(network_string):
             |  -|
             |---|    -> Point(1, 2), Point(3, 2) are neighbours
             |___|
-             ___
-            |  -|
+             ______
+            |  -   |
             |--Node| -> Point(1, 2), Point(3, 2) are neighbours
-            |___|
+            |______|
         """
         neighbouring_positions = set()
 
