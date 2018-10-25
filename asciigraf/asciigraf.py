@@ -73,30 +73,6 @@ def graph_from_ascii(network_string):
 
         edge_char_to_neighbours[pos] = neighbouring_positions
 
-    def build_edge_from_position(starting_char_position):
-        def follow_edge(starting_position, neighbour):
-            if neighbour in node_char_to_node:
-                return (neighbour,)
-            else:
-                a, b = edge_char_to_neighbours[neighbour]
-                next_neighbour = a if b == starting_position else b
-                return (neighbour, ) + follow_edge(neighbour, next_neighbour)
-
-        neighbour_1, neighbour_2 = sorted(edge_char_to_neighbours[pos])
-        positions = list(chain(
-            reversed(follow_edge(pos, neighbour_1)), (pos, ),
-            follow_edge(pos, neighbour_2)
-        ))
-
-        new_edge = dict(
-            points=positions[1:-1],
-            nodes=(
-                node_char_to_node[positions[0]],
-                node_char_to_node[positions[-1]]
-            ),
-        )
-        return new_edge
-
     edges = []  # [{"points": [], "nodes": []},... ]
     edge_char_to_edge_map = {}  # {Point -> edge}
 
@@ -107,7 +83,7 @@ def graph_from_ascii(network_string):
             # process all the chars in the edge within one loop iteration
             continue
 
-        new_edge = build_edge_from_position(pos)
+        new_edge = build_edge_from_position(pos, edge_char_to_neighbours, node_char_to_node)
 
         for position in new_edge['points']:
             edge_char_to_edge_map[position] = new_edge
@@ -208,6 +184,32 @@ def get_abutting_edge_chars(pos, all_chars):
             neighbouring_positions |= {pos + offset}
 
     return tuple(neighbouring_positions)
+
+
+def build_edge_from_position(starting_char_position, neighbour_map, node_char_to_node):
+    def follow_edge(starting_position, neighbour):
+        if neighbour in node_char_to_node:
+            return (neighbour,)
+        else:
+            a, b = neighbour_map[neighbour]
+            next_neighbour = a if b == starting_position else b
+            return (neighbour, ) + follow_edge(neighbour, next_neighbour)
+
+    neighbour_1, neighbour_2 = sorted(neighbour_map[starting_char_position])
+    positions = list(chain(
+        reversed(follow_edge(starting_char_position, neighbour_1)),
+        (starting_char_position, ),
+        follow_edge(starting_char_position, neighbour_2)
+    ))
+
+    new_edge = dict(
+        points=positions[1:-1],
+        nodes=(
+            node_char_to_node[positions[0]],
+            node_char_to_node[positions[-1]]
+        ),
+    )
+    return new_edge
 
 
 def patch_edge_chars_over_labels(labels, edge_chars):
