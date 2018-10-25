@@ -120,7 +120,10 @@ def build_networkx_graph(nodes, edges):
         (node, {"position": tuple(pos)}) for pos, node in nodes.items()
     )
     ascii_graph.add_edges_from(
-        (edge['nodes'][0], edge['nodes'][1], {"length": len(edge["points"])})
+        (edge['nodes'][0], edge['nodes'][1], {
+            "length": len(edge["points"]),
+            "points": [tuple(el) for el in edge["points"]]
+        })
         for edge in edges
     )
     networkx.set_edge_attributes(
@@ -245,6 +248,9 @@ def build_edge_from_position(
         (starting_char_position, ),
         follow_edge(starting_char_position, neighbour_2)
     ))
+
+    if positions[0] > positions[-1]:
+        positions = list(reversed(positions))
 
     new_edge = dict(
         points=positions[1:-1],

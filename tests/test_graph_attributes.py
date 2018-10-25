@@ -48,3 +48,67 @@ def test_node_position_attributes():
                       "n4": (23, 6),
     }
 
+
+def test_line_positions():
+    graph = graph_from_ascii("""
+
+        n1------
+               |
+               |
+               |
+               n2 """)
+
+    points = networkx.get_edge_attributes(graph, 'points')
+
+    assert points == {
+        ("n1", "n2"): [
+            (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2),
+                                                         (15, 3),
+                                                         (15, 4),
+                                                         (15, 5),
+        ]
+    }
+
+
+def test_line_positions_when_line_is_split():
+    graph = graph_from_ascii("""
+
+               --------n1
+               |
+               |
+               |
+               n2 """)
+
+    points = networkx.get_edge_attributes(graph, 'points')
+
+    assert points == {
+        ("n1", "n2"): [
+            (22, 2), (21, 2), (20, 2), (19, 2),
+            (18, 2), (17, 2), (16, 2), (15, 2),
+            (15, 3),
+            (15, 4),
+            (15, 5),
+        ]
+    }
+
+
+def test_line_positions_when_order_is_reversed():
+    graph = graph_from_ascii("""
+
+               -----
+               |   |
+               n2  n1""")
+
+    points = networkx.get_edge_attributes(graph, 'points')
+
+    assert points == {
+        ("n2", "n1"): [
+            (15, 3),
+            (15, 2),
+            (16, 2),
+            (17, 2),
+            (18, 2),
+            (19, 2),
+            (19, 3),
+        ]
+    }
