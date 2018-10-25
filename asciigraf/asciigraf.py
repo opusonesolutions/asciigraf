@@ -331,10 +331,10 @@ def draw(edge_chars, nodes=None):
     for position, label in all_chars:
         if cursor.y < position.y:
             string += '\n' * (position.y - cursor.y)
-            cursor = Point(0, position.y)
+            cursor = Point(0, position.y+1)
         if cursor.x < position.x:
             string += ' ' * (position.x - cursor.x)
-            cursor = Point(position.x, position.y)
+            cursor = position
         string += label
-        cursor.x += len(label)
+        cursor = Point(position.x + len(label), position.y)
     return string

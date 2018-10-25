@@ -18,11 +18,17 @@ def test_points_add_together(p12, p34):
     assert p.x == 4
     assert p.y == 6
 
+    assert p is not p12
+    assert p is not p34
+
 
 def test_points_subtract(p12, p34):
     p = p12 - p34
     assert p.x == -2
     assert p.y == -2
+
+    assert p is not p12
+    assert p is not p34
 
 
 def test_points_compare():
@@ -61,3 +67,25 @@ def test_points_iter_out_their_coords(p12):
 
 def test_points_repr_their_coords(p12):
     assert repr(p12) == 'Point(1, 2)'
+
+
+def test_point_attributes_cant_be_set(p12):
+    with pytest.raises(TypeError):
+        p12.x = 100
+
+    with pytest.raises(TypeError):
+        p12.y = 200
+
+    with pytest.raises(TypeError):
+        p12.z = 100
+
+
+def test_point_attributes_cant_be_deleted(p12):
+    with pytest.raises(TypeError):
+        del p12.x
+
+    with pytest.raises(TypeError):
+        del p12.y
+
+    with pytest.raises(TypeError):
+        del p12.z
