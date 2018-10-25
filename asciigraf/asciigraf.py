@@ -47,42 +47,11 @@ def graph_from_ascii(network_string):
     node_char_to_node = map_text_chars_to_text(nodes)
     label_char_to_label = map_text_chars_to_text(labels)
 
-    def get_abutting_edge_chars(pos):
-        """ Return the edge/node positions that neighbour the given position.
-
-            e.g.
-             ___
-            |  /|
-            | *-|    -> Point(3, 1), Point(3, 2) are neighbours
-            |___|
-             ___
-            |  /|
-            |-* |    -> Point(3, 1), Point(1, 2) are neighbours
-            |___|
-             ___
-            |  -|
-            |---|    -> Point(1, 2), Point(3, 2) are neighbours
-            |___|
-             ______
-            |  -   |
-            |--Node| -> Point(1, 2), Point(3, 2) are neighbours
-            |______|
-        """
-        neighbouring_positions = set()
-
-        # first, consider neighbours of our char (e.g. if our char
-        # is '-' then any node or edge char to the left or right
-        # is neighbouring to the char at `pos`)
-        for offset in EDGE_CHAR_NEIGHBOURS[edge_chars[pos]]:
-            neighbour = pos + offset
-            if neighbour in edge_chars or neighbour in node_char_to_node:
-                neighbouring_positions |= {neighbour}
-
-        # second, consider chars to which this char could be a neighbour
-        # (e.g. if the char below is a |, our char neighbours it)
-        for offset, valid_char in ABUTTING.items():
-            if edge_chars.get(pos + offset) == valid_char:
-                neighbouring_positions |= {pos + offset}
+    edge_char_to_neighbours = {}
+    for pos in edge_chars.keys():
+        neighbouring_positions = get_abutting_edge_chars(
+            pos, edge_chars, node_char_to_node
+        )
 
         # every edge char should end up with exactly 2 neighbours, or
         # we have a line that doesn't make sense. the neighbours could either
@@ -100,12 +69,7 @@ def graph_from_ascii(network_string):
                 "\nAffected Edge:\n{}".format(error_map)
             )
 
-        return tuple(neighbouring_positions)
-
-    edge_char_to_neighbours = {
-        pos: get_abutting_edge_chars(pos)
-        for pos in edge_chars.keys()
-    }
+        edge_char_to_neighbours[pos] = neighbouring_positions
 
     def build_edge_from_position(starting_char_position):
         def follow_edge(starting_position, neighbour):
@@ -202,6 +166,46 @@ def get_edge_chars(network_string):
         for col, char in enumerate(line)
         if char in EDGE_CHARS
     )
+
+
+def get_abutting_edge_chars(pos, edge_chars, node_char_to_node):
+    """ Return the edge/node positions that neighbour the given position.
+
+        e.g.
+         ___
+        |  /|
+        | *-|    -> Point(3, 1), Point(3, 2) are neighbours
+        |___|
+         ___
+        |  /|
+        |-* |    -> Point(3, 1), Point(1, 2) are neighbours
+        |___|
+         ___
+        |  -|
+        |---|    -> Point(1, 2), Point(3, 2) are neighbours
+        |___|
+         ______
+        |  -   |
+        |--Node| -> Point(1, 2), Point(3, 2) are neighbours
+        |______|
+    """
+    neighbouring_positions = set()
+
+    # first, consider neighbours of our char (e.g. if our char
+    # is '-' then any node or edge char to the left or right
+    # is neighbouring to the char at `pos`)
+    for offset in EDGE_CHAR_NEIGHBOURS[edge_chars[pos]]:
+        neighbour = pos + offset
+        if neighbour in edge_chars or neighbour in node_char_to_node:
+            neighbouring_positions |= {neighbour}
+
+    # second, consider chars to which this char could be a neighbour
+    # (e.g. if the char below is a |, our char neighbours it)
+    for offset, valid_char in ABUTTING.items():
+        if edge_chars.get(pos + offset) == valid_char:
+            neighbouring_positions |= {pos + offset}
+
+    return tuple(neighbouring_positions)
 
 
 def patch_edge_chars_over_labels(labels, edge_chars):
