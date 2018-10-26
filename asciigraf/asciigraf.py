@@ -62,13 +62,13 @@ def get_edges(network_string, nodes, labels):
     edge_chars = get_edge_chars(network_string)
     edge_chars = patch_edge_chars_over_labels(labels, edge_chars)
 
-    all_chars = dict(edge_chars)
+    node_chars = {}
     for root_pos, text in nodes.items():
-        all_chars.update(char_map(text, root_pos))
+        node_chars.update(char_map(text, root_pos))
 
     edge_char_to_neighbours = {}
     for pos in edge_chars.keys():
-        neighbouring_positions = get_abutting_edge_chars(pos, all_chars)
+        neighbouring_positions = get_neighbours(pos, edge_chars, node_chars)
 
         # every edge char should end up with exactly 2 neighbours, or
         # we have a line that doesn't make sense. the neighbours could either
@@ -171,10 +171,10 @@ def get_edge_chars(network_string):
     )
 
 
-def get_abutting_edge_chars(pos, all_chars):
+def get_neighbours(pos, edge_chars, node_chars):
     """ Return the edge/node positions that neighbour the given position.
 
-        e.g.
+        e.g. let `pos` equal Point(2,2):
          ___
         |  /|
         | *-|    -> Point(3, 1), Point(3, 2) are neighbours
@@ -183,29 +183,30 @@ def get_abutting_edge_chars(pos, all_chars):
         |  /|
         |-* |    -> Point(3, 1), Point(1, 2) are neighbours
         |___|
-         ___
-        |  -|
-        |---|    -> Point(1, 2), Point(3, 2) are neighbours
-        |___|
          ______
-        |  -   |
+        |      |
         |--Node| -> Point(1, 2), Point(3, 2) are neighbours
         |______|
+         ___
+        |  -|
+        |---|    -> Point(1, 2), Point(3, 2) are neighbours, Point(0,3) is not
+        |___|
+
     """
     neighbouring_positions = set()
 
     # first, consider neighbours of our char (e.g. if our char
     # is '-' then any node or edge char to the left or right
     # is neighbouring to the char at `pos`)
-    for offset in EDGE_CHAR_NEIGHBOURS[all_chars[pos]]:
+    for offset in EDGE_CHAR_NEIGHBOURS[edge_chars[pos]]:
         neighbour = pos + offset
-        if neighbour in all_chars:
+        if neighbour in edge_chars or neighbour in node_chars:
             neighbouring_positions |= {neighbour}
 
     # second, consider chars to which this char could be a neighbour
     # (e.g. if the char below is a |, our char neighbours it)
     for offset, valid_char in ABUTTING.items():
-        if all_chars.get(pos + offset) == valid_char:
+        if edge_chars.get(pos + offset) == valid_char:
             neighbouring_positions |= {pos + offset}
 
     return tuple(neighbouring_positions)
