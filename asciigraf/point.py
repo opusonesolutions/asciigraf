@@ -1,8 +1,15 @@
 
 class Point(object):
+
+    def __setattr__(self, attr, val):
+        raise TypeError("Can't set '{}' on Point object".format(attr))
+
+    def __delattr__(self, attr):
+        raise TypeError("Can't delete '{}' on Point object".format(attr))
+
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        super(Point, self).__setattr__('x', x)
+        super(Point, self).__setattr__('y', y)
 
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)

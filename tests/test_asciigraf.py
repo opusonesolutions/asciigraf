@@ -89,18 +89,18 @@ def test_converts_other_kind_of_down_left_angle():
 
 
 def test_converts_escaped_down_obtuse_angle():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
             1--------
-                     \\
+                     \
                       2      """)
     assert set(graph.nodes()) == {"1", "2"}
     assert set(graph.edges()) == {("1", "2")}
 
 
 def test_converts_other_kind_of_escaped_down_obtuse_angle():
-    graph = graph_from_ascii("""
-            1-------\\
-                     \\
+    graph = graph_from_ascii(r"""
+            1-------\
+                     \
                       2      """)
     assert set(graph.nodes()) == {"1", "2"}
     assert set(graph.edges()) == {("1", "2")}
@@ -124,8 +124,62 @@ def test_converts_other_kind_of_down_acute_angle():
     assert set(graph.edges()) == {("1", "2")}
 
 
-def test_converts_meshed_network():
+def test_converts_up_right_angle():
     graph = graph_from_ascii("""
+                1
+                |
+         2------|            """)
+    assert set(graph.nodes()) == {"1", "2"}
+    assert set(graph.edges()) == {("1", "2")}
+
+
+def test_converts_the_other_kind_of_up_right_angle():
+    graph = graph_from_ascii("""
+                1
+                |
+         2-------            """)
+    assert set(graph.nodes()) == {"1", "2"}
+    assert set(graph.edges()) == {("1", "2")}
+
+
+def test_converts_left_down_angle():
+    graph = graph_from_ascii("""
+         ------2
+         |
+         1
+    """)
+
+    assert set(graph.nodes()) == {"2", "1"}
+    assert set(graph.edges()) == {("2", "1")}
+
+
+def test_u_bend():
+    graph = graph_from_ascii("""
+         ------|
+         |     |
+         1     |
+        2------|
+    """)
+
+    assert set(graph.nodes()) == {"1", "2"}
+    assert set(graph.edges()) == {("1", "2")}
+
+
+def test_doubl_down_left_angle():
+    graph = graph_from_ascii("""
+         ------2
+         |
+         |
+        --
+    1---|
+    """)
+
+    assert set(graph.nodes()) == {"2", "1"}
+    assert set(graph.edges()) == {("2", "1")}
+
+
+def test_converts_meshed_network():
+    graph = graph_from_ascii(r"""
           0----1-------2
                 \     /
                  3---4       """)
@@ -140,7 +194,7 @@ def test_converts_meshed_network():
 
 
 def test_node_ordering():
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(r"""
           0----3-------2
                 \     /
                  1---4
@@ -165,8 +219,23 @@ def test_S_bend():
     assert set(graph.edges()) == {("0", "2")}
 
 
-def test_some_more_node_names():
+def test_adjacent_edges():
     graph = graph_from_ascii("""
+        a------b
+        c----------d
+    """)
+
+    assert set(graph.nodes()) == {
+        "a", "b", "c", "d"
+    }
+    assert set(graph.edges()) == {
+        ("a", "b"),
+        ("c", "d"),
+    }
+
+
+def test_some_more_node_names():
+    graph = graph_from_ascii(r"""
           s---p----1---nx
          /    |        |
         /     |        0---f
@@ -293,7 +362,7 @@ Network String:
                        2
 Affected Edge:
 
-                ---------------
+                      ---
                        |"""
 
 
@@ -305,4 +374,29 @@ def test_missing_end_node_raises_missing_end_node_exception():
 Network String:
 1---
 Affected Edge:
- ---"""
+  --"""
+
+
+def test_bad_label_triggers_exception(caplog):
+    with pytest.raises(InvalidEdgeError) as e:
+        graph_from_ascii("""
+            n1
+            |
+      n2--(label)
+            |
+            n3""")
+
+    assert str(e.value) == """Too many nodes:
+Network String:
+
+            n1
+            |
+      n2--(label)
+            |
+            n3
+Affected Edge:
+
+
+            |
+           -|
+            |"""
