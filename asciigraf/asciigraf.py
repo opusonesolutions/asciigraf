@@ -211,7 +211,25 @@ def get_abutting_edge_chars(pos, all_chars):
     return tuple(neighbouring_positions)
 
 
-def build_edge_from_position(starting_char_position, neighbour_map, node_char_to_node):
+def build_edge_from_position(
+        starting_char_position, neighbour_map, node_char_to_node):
+    """ Given the position of any one character on an edge, traverses the
+        neighbour_map to build an ordered list of all the points on the edge
+
+        Arguments:
+          * starting_char_position: The position from which to start traversing
+                                    the edge.
+          * neighbour_map: For each character in the network_string, contains
+                           the positions of its two neighbours, which could
+                           be characters in a node or other edge characters
+          * node_char_to_node: a map of {node character position -> node}
+                               {
+                                    Point(0,0): "n1",
+                                    Point(1,0): "n1",
+                                    Point(2,2): "n2",
+                                    Point(3,2): "n2",
+                               }
+    """
     def follow_edge(starting_position, neighbour):
         if neighbour in node_char_to_node:
             return (neighbour,)
