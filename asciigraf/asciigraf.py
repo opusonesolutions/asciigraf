@@ -43,13 +43,19 @@ def graph_from_ascii(network_string):
     edge_chars = get_edge_chars(network_string)
 
     edge_chars = patch_edge_chars_over_labels(labels, edge_chars)
+    label_char_to_label = map_text_chars_to_text(labels)
 
+    edges, edge_char_to_edge_map = get_edges(network_string, nodes, edge_chars)
+
+    return build_networkx_graph(nodes, edges, label_char_to_label, edge_char_to_edge_map)
+
+
+def get_edges(network_string, nodes, edge_chars):
     all_chars = dict(edge_chars)
     for root_pos, text in nodes.items():
         all_chars.update(char_map(text, root_pos))
 
     node_char_to_node = map_text_chars_to_text(nodes)
-    label_char_to_label = map_text_chars_to_text(labels)
 
     edge_char_to_neighbours = {}
     for pos in edge_chars.keys():
@@ -83,12 +89,18 @@ def graph_from_ascii(network_string):
             # process all the chars in the edge within one loop iteration
             continue
 
-        new_edge = build_edge_from_position(pos, edge_char_to_neighbours, node_char_to_node)
+        new_edge = build_edge_from_position(
+            pos, edge_char_to_neighbours, node_char_to_node
+        )
 
         for position in new_edge['points']:
             edge_char_to_edge_map[position] = new_edge
         edges.append(new_edge)
 
+    return edges, edge_char_to_edge_map
+
+
+def build_networkx_graph(nodes, edges, label_char_to_label, edge_char_to_edge_map):
     # Build networkx datastructure
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
