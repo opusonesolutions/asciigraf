@@ -40,22 +40,31 @@ def graph_from_ascii(network_string):
         of a network
     """
     nodes, labels = get_nodes_and_labels(network_string)
+    edges = get_edges(network_string, nodes, labels)
+    return build_networkx_graph(nodes, edges)
+
+
+def get_edges(network_string, nodes, labels):
+    """ Traverses all adjacent edge characters to identify
+        edges in the network.
+
+        returns a set of dictionaries, each represeting an edge:
+        {
+            {
+                "nodes": ("n1", "n2"),
+                "points": [Point(), ...]
+                "label": "(label_1)"  #
+            },
+            ...
+        }
+
+    """
     edge_chars = get_edge_chars(network_string)
-
     edge_chars = patch_edge_chars_over_labels(labels, edge_chars)
-    label_char_to_label = map_text_chars_to_text(labels)
 
-    edges, edge_char_to_edge_map = get_edges(network_string, nodes, edge_chars)
-
-    return build_networkx_graph(nodes, edges, label_char_to_label, edge_char_to_edge_map)
-
-
-def get_edges(network_string, nodes, edge_chars):
     all_chars = dict(edge_chars)
     for root_pos, text in nodes.items():
         all_chars.update(char_map(text, root_pos))
-
-    node_char_to_node = map_text_chars_to_text(nodes)
 
     edge_char_to_neighbours = {}
     for pos in edge_chars.keys():
@@ -82,6 +91,8 @@ def get_edges(network_string, nodes, edge_chars):
     edges = []  # [{"points": [], "nodes": []},... ]
     edge_char_to_edge_map = {}  # {Point -> edge}
 
+    node_char_to_node = map_text_chars_to_text(nodes)
+    label_char_to_label = map_text_chars_to_text(labels)
     for pos, char in edge_chars.items():
         if pos in edge_char_to_edge_map:
             # We only expect to get past this continue for one char
@@ -95,12 +106,14 @@ def get_edges(network_string, nodes, edge_chars):
 
         for position in new_edge['points']:
             edge_char_to_edge_map[position] = new_edge
+            if position in label_char_to_label:
+                new_edge["label"] = label_char_to_label[position]
         edges.append(new_edge)
 
-    return edges, edge_char_to_edge_map
+    return edges
 
 
-def build_networkx_graph(nodes, edges, label_char_to_label, edge_char_to_edge_map):
+def build_networkx_graph(nodes, edges):
     # Build networkx datastructure
     ascii_graph = networkx.OrderedGraph()
     ascii_graph.add_nodes_from(
@@ -113,9 +126,9 @@ def build_networkx_graph(nodes, edges, label_char_to_label, edge_char_to_edge_ma
     networkx.set_edge_attributes(
         ascii_graph, name="label",
         values={
-            edge_char_to_edge_map[pos]["nodes"]: label[1:-1]
-            for pos, label in label_char_to_label.items()
-            if pos in edge_char_to_edge_map
+            edge["nodes"]: edge["label"][1:-1]
+            for edge in edges
+            if "label" in edge
         }
     )
     return ascii_graph
