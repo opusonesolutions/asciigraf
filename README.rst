@@ -36,8 +36,7 @@ Usage
 
 Asciigraf expects a string containg a 2-d ascii diagram. Nodes can be an
 alphanumeric string composed of characters in ``A-Z``, ``a-z``, ``0-9``,
-and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``
-(with some restrictions on how corners work --- see the tests).
+and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``.
 
 .. code:: python
 
