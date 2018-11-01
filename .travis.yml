@@ -1,5 +1,12 @@
 language: python
+env:
+  global:
+    - CC_TEST_REPORTER_ID: 4ec41efba1c82158ae6cb9981c186834c26d3e93ab69f396c284655235d8ca55
 install: pip install tox coveralls flake8
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
   - flake8
   - tox
