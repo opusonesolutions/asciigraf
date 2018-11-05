@@ -65,18 +65,24 @@ and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``.
 
 Networkx provides tools to attach data to nodes and edges, and asciigraf
 leverages these in a number of ways; in the example below you can see that
-asciigraf uses this to attach a ``Point``
-object to each node indicating where on the *(x, y)* plane each node
+asciigraf uses this to attach a ``x, y`` position tuple to each node
+indicating where on the *(x, y)* plane each node
 starts ( *0,0* is at the top-left). It also attaches a ``length`` attribute
-to each edge which matches the number of characters in that edge.
+to each edge which matches the number of characters in that edge, as well
+as a list of positions for each character an edge
 
 .. code:: python
 
     print(network.nodes(data=True))
-    >>> [('NodeA', {'position': Point(1, 10)}), ('NodeB', {'position': Point(3, 23)})]
+    >>> [('NodeA', {'position': (10, 1)}), ('NodeB', {'position': (23, 3)})]
 
     print(network.edges(data=True))
-    >>> [('NodeA', 'NodeB', OrderedDict([('length', 10)]))]
+    >>> [('NodeA', 'NodeB', OrderedDict([('length', 10), 'points', [...]))]
+    
+    print(network.edge['NodeA']['NodeB']['points'])
+    >>> [(15, 1), (16, 1), (17, 1), (18, 1),
+         (19, 1), (19, 2), (19, 3), (20, 3), (21, 3), (22, 3)]
+
 
 Asciigraf also lets you annotate the edges of graphs using in-line labels ---
 denoted by parentheses. The contents of the label will be attached to the edge

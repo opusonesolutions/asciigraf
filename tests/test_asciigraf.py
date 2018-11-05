@@ -5,7 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 #############################################################################
 
-from collections import OrderedDict
 import pytest
 
 from asciigraf import graph_from_ascii
@@ -14,18 +13,6 @@ from asciigraf.asciigraf import (
     InvalidEdgeError,
 )
 from asciigraf.point import Point
-
-
-def test_ascii_positions():
-    graph = graph_from_ascii(
-        """
-                Node_1---Node2-----
-                                 /
-                               Nald33
-        """)
-    assert graph.node["Node_1"]["position"] == Point(x=16, y=1)
-    assert graph.node["Node2"]["position"] == Point(x=25, y=1)
-    assert graph.node["Nald33"]["position"] == Point(x=31, y=3)
 
 
 def test_node_iter_returns_label_and_position_of_nodes():
@@ -251,23 +238,6 @@ def test_some_more_node_names():
                              """)
     assert len(graph.nodes()) == 19
     assert len(graph.edges()) == 19
-
-
-def test_line_lengths():
-    edge_data = graph_from_ascii("""
-            <13>           <10>
-        n0-------------n1----------n2
-                       |
-                       |  <3>
-                       |
-                       n4
-    """).edges(data=True)
-
-    assert list(edge_data) == [
-        ("n0", "n1", OrderedDict([("length", 13)])),
-        ("n1", "n2", OrderedDict([("length", 10)])),
-        ("n1", "n4", OrderedDict([("length", 3)])),
-    ]
 
 
 def test_line_labels():
