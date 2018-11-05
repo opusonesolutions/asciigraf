@@ -80,7 +80,7 @@ def test_line_positions():
 def test_line_positions_when_line_is_split():
     graph = graph_from_ascii("""
 
-               --------n1
+               -------n1
                |
                |
                |
@@ -90,8 +90,7 @@ def test_line_positions_when_line_is_split():
 
     assert points == {
         ("n1", "n2"): [
-            (22, 2), (21, 2), (20, 2), (19, 2),
-            (18, 2), (17, 2), (16, 2), (15, 2),
+            (21, 2), (20, 2), (19, 2), (18, 2), (17, 2), (16, 2), (15, 2),
             (15, 3),
             (15, 4),
             (15, 5),
