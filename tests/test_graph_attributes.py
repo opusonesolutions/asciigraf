@@ -118,3 +118,41 @@ def test_line_positions_when_order_is_reversed():
             (19, 3),
         ]
     }
+
+
+def test_line_positions_with_horizontal_label():
+    graph = graph_from_ascii("  n1---(label)--n2  ")
+
+    points = networkx.get_edge_attributes(graph, 'points')
+    assert points == {
+        ("n1", "n2"): [
+            # positions of the first three dashes right of `n1`
+            (4, 0), (5, 0), (6, 0),
+
+            # positions of the characters in `(label)`
+            (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0),
+
+            # positions of the last 2 dashes left of `n2`
+            (14, 0), (15, 0)
+        ]
+    }
+
+
+def test_line_positions_with_vertical_label():
+    graph = graph_from_ascii("""
+
+            n1
+            |
+         (label)
+            |
+           n2
+
+    """)
+
+    assert networkx.get_edge_attributes(graph, 'points') == {
+        ("n1", "n2"): [
+            (12, 3),  # position of the '|' under `n1`
+            (12, 4),  # position of the 'b' in `label`
+            (12, 5),  # position of the '|' above `n2`
+        ]
+    }
