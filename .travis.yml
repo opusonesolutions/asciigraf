@@ -10,6 +10,8 @@ before_script:
 script:
   - flake8
   - tox
+after_script:
+   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT --coverage-input-type coverage.py
 after_success: coveralls
 
 jobs:
@@ -24,7 +26,9 @@ jobs:
     - python: pypy3.5
     - stage: deploy
       install: skip
+      before_script: true
       script: true
+      after_script: true
       after_success: true
       before_deploy: echo $TRAVIS_TAG > asciigraf/VERSION
       python: "3.6"
