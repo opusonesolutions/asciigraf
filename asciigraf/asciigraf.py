@@ -358,8 +358,14 @@ def node_iter(network_string):
             (Point(0,0), node1), (Point(9,0), (label1))
         )
     """
+    NODE_MATCH = re.compile(
+        r'('
+          r'[^ \-\\\/|]+[ ^ ]'  # any of non-edge chars, followed by  1 space # noqa
+        r')*'  # as many of ^ as are repeated (including zero)
+        r'([^ \\\/\-|]+)'  # ... followed by a group of non-edge characters
+    )
     for row, line in enumerate(network_string.split("\n")):
-        for match in re.finditer(r'\(?([0-9A-Za-z_{}]+)\)?', line):
+        for match in NODE_MATCH.finditer(line):
             yield (match.group(0), Point(match.start(), row))
 
 
