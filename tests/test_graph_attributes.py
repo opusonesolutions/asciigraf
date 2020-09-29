@@ -34,9 +34,9 @@ def test_node_positions():
                                  /
                                Nald33
         """)
-    assert graph.node["Node_1"]["position"] == (16, 1)
-    assert graph.node["Node2"]["position"] == (25, 1)
-    assert graph.node["Nald33"]["position"] == (31, 3)
+    assert networkx.get_node_attributes(graph, "position")["Node_1"] == (16, 1)
+    assert networkx.get_node_attributes(graph, "position")["Node2"] == (25, 1)
+    assert networkx.get_node_attributes(graph, "position")["Nald33"] == (31, 3)
 
 
 def test_node_position_attributes():
