@@ -308,20 +308,20 @@ def patch_edge_chars_over_labels(labels, edge_chars):
 
 
 def char_map(text, root_position):
-        """ Maps the position of each character in 'text'
+    """ Maps the position of each character in 'text'
 
-            e.g.
+        e.g.
 
-            char_map("foo", root_position=Point(20, 2)) -> {
-                Point(20, 2) -> 'f',
-                Point(21, 2) -> 'o',
-                Point(22, 2) -> 'o',
-            }
-        """
-        return OrderedDict(
-            (Point(root_position.x+x, root_position.y), char)
-            for x, char in enumerate(text)
-        )
+        char_map("foo", root_position=Point(20, 2)) -> {
+            Point(20, 2) -> 'f',
+            Point(21, 2) -> 'o',
+            Point(22, 2) -> 'o',
+        }
+    """
+    return OrderedDict(
+        (Point(root_position.x+x, root_position.y), char)
+        for x, char in enumerate(text)
+    )
 
 
 def map_text_chars_to_text(text_map):
