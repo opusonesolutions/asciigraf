@@ -5,14 +5,16 @@
 # LICENSE file in the root directory of this source tree.
 #############################################################################
 
+import re
 from collections import OrderedDict
 from itertools import chain
-import re
+from typing import List, Tuple
 
-from .point import Point
-
+import colorama
+from colorama import Style, Fore
 import networkx
 
+from .point import Point
 
 LEFT, RIGHT = Point(-1, 0), Point(1, 0)
 ABOVE, BELOW = Point(0, -1), Point(0, 1)
@@ -75,15 +77,16 @@ def get_edges(network_string, nodes, labels):
         # be an adjacent edge character or a character in a node label
         n_nodes = len(neighbouring_positions)
         if n_nodes != 2:
-            error_map = draw({
-                pos: edge_chars[pos]
-                for pos in chain((pos, ), neighbouring_positions)
-                if pos in edge_chars
-            })
+            error_map = highlight_bad_edge_characters(
+                network_string, [pos, *neighbouring_positions]
+            )
             raise InvalidEdgeError(
-                "Too {} nodes:".format("many" if n_nodes > 2 else "few") +
-                "\nNetwork String:\n{}".format(network_string) +
-                "\nAffected Edge:\n{}".format(error_map)
+                "Too {} many neighbors at ln {}, col {}".format(
+                    "many" if n_nodes > 2 else "few",
+                    pos.y,
+                    pos.x,
+                )
+                + "\n\n{}".format(error_map)
             )
 
         edge_char_to_neighbours[pos] = neighbouring_positions
@@ -371,6 +374,103 @@ def node_iter(network_string):
 
 class InvalidEdgeError(Exception):
     """ Raise this when an edge is wrongly drawn """
+
+
+class AnsiColours:
+    PURPLE = "\033[35;1m"
+    FAIL = "\033[91;1m"
+    RESET = "\033[0m"
+
+
+def highlight_bad_edge_characters(
+    network_string: str, relevant_char_positions: List[Point]
+) -> str:
+    """Highlights all the characters specified in `relevant_char_positions` using
+    ANSI colour codes"""
+    try:
+        colorama.init()
+        lines = network_string.splitlines(keepends=True)
+
+        quote_char = "\'" if "\"" in network_string else "\""
+        quote_val = (
+            3 * quote_char
+            if len(network_string.splitlines()) > 1
+            else quote_char
+        )
+        quotes = Style.DIM + quote_val + Style.RESET_ALL
+
+        # first we calculate the index in `network_string` of each character
+        # we want to highlight
+        char_indexes = sorted(
+            sum(len(el) for el in lines[0:char_pos.y])
+            + char_pos.x  # depth into relevant line
+            for char_pos in relevant_char_positions
+        )
+
+        # next we split apart `network_string` into consecutive segments that
+        # surround the characters we are interested in
+        #
+        # e.g. given indexes for the stars in '----*====*----', we would get
+        # ['----;, '====', '----' ]
+        def keep_ranges(
+            char_indexes: List[int], network_string: str
+        ) -> List[Tuple[int, int]]:
+            yield (0, char_indexes[0])
+            for a, b in zip(char_indexes[:-1], char_indexes[1:]):
+                yield (a + 1, b)
+            yield (b + 1, len(network_string))
+
+        segments = [
+            network_string[start:end]
+            for start, end in keep_ranges(char_indexes, network_string)
+        ]
+
+        # next, we extract just the characters we want to highlight
+        replaced_characters = [
+            network_string[char_index] for char_index in char_indexes
+        ]
+
+        # next, we wrap the target characters in ansi colours, and sandwich
+        # them back in between the segments
+        highlighted_segments = [
+            (
+                f"{preceeding_segment}"
+                f"{Fore.RED + Style.BRIGHT}{char}{Style.RESET_ALL}"
+            )
+            for preceeding_segment, char in zip(
+                segments[:-1], replaced_characters
+            )
+        ]
+        error_text = (
+            f"network_string = {quotes}"
+            f"{''.join(highlighted_segments)}{segments[-1]}"
+            f"{quotes}"
+        )
+
+        # here we resplit the text as lines, and do some cleanup formatting
+        error_lines = ''.join(error_text).splitlines(keepends=True)
+        if error_lines[-1].lstrip() == quotes:
+            # this gets rid of the indent if the last line of `network_string`
+            # is just indented closing quotes, i.e. the underscored part here:
+            #
+            #    def some_func():
+            #        graph_from_ascii('''
+            #
+            #            all---ur---base
+            #
+            #    ____''')
+            error_lines[-1] = error_lines[-1].lstrip()
+
+        # lastly, we add a reset to each line in the map, to override anything
+        # added by tools that try to add colouring to error outputs (e.g.
+        # pytest)
+        return (
+            Style.RESET_ALL
+            + Style.RESET_ALL.join(error_lines)
+        )
+    except Exception:
+        # it'd be embarassing to fail while trying to describe why we failed
+        return ""
 
 
 def draw(edge_chars, nodes=None):

@@ -324,49 +324,41 @@ def test_too_many_neighbours_triggers_bad_edge_exception(caplog):
                        |
                        2""")
 
-    assert str(e.value) == """Too many nodes:
-Network String:
+    assert str(e.value) == '''\
+Too many many neighbors at ln 1, col 23
 
-               1---------------3
-                       |
-                       2
-Affected Edge:
-
-                      ---
-                       |"""
+\x1b[0mnetwork_string = \x1b[2m"""\x1b[0m
+\x1b[0m               1------\x1b[31m\x1b[1m-\x1b[0m\x1b[31m\x1b[1m-\x1b[0m\x1b[31m\x1b[1m-\x1b[0m------3
+\x1b[0m                       \x1b[31m\x1b[1m|\x1b[0m
+\x1b[0m                       2\x1b[2m"""\x1b[0m''' # noqa
 
 
 def test_missing_end_node_raises_missing_end_node_exception():
     with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii('1---')
 
-    assert str(e.value) == """Too few nodes:
-Network String:
-1---
-Affected Edge:
-  --"""
+    assert str(e.value) == """\
+Too few many neighbors at ln 0, col 3
+
+\x1b[0mnetwork_string = \x1b[2m"\x1b[0m1-\x1b[31m\x1b[1m-\x1b[0m\x1b[31m\x1b[1m-\x1b[0m\x1b[2m"\x1b[0m"""  # noqa
 
 
 def test_bad_label_triggers_exception(caplog):
     with pytest.raises(InvalidEdgeError) as e:
         graph_from_ascii("""
-            n1
-            |
-      n2--(label)
-            |
-            n3""")
+                n1
+                |
+           n2--(label)
+                |
+                n3
+        """)
+    assert str(e.value) == '''\
+Too many many neighbors at ln 3, col 16
 
-    assert str(e.value) == """Too many nodes:
-Network String:
-
-            n1
-            |
-      n2--(label)
-            |
-            n3
-Affected Edge:
-
-
-            |
-           -|
-            |"""
+\x1b[0mnetwork_string = \x1b[2m"""\x1b[0m
+\x1b[0m                n1
+\x1b[0m                \x1b[31m\x1b[1m|\x1b[0m
+\x1b[0m           n2--\x1b[31m\x1b[1m(\x1b[0m\x1b[31m\x1b[1ml\x1b[0mabel)
+\x1b[0m                \x1b[31m\x1b[1m|\x1b[0m
+\x1b[0m                n3
+\x1b[0m\x1b[2m"""\x1b[0m'''  # noqa
