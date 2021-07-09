@@ -37,6 +37,7 @@ setup(
     license="MIT",
     install_requires=[
         'networkx>=1.11',
+        'colorama',
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],
