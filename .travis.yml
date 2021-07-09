@@ -20,6 +20,7 @@ jobs:
     - python: 3.7
     - python: 3.8
       dist: xenial
+    - python: 3.9
     - python: pypy3
     - stage: deploy
       install: skip
