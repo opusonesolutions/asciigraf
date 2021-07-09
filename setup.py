@@ -36,8 +36,8 @@ setup(
     keywords=["graph", "network", "testing", "parser"],
     license="MIT",
     install_requires=[
-        'networkx>=1.11',
-        'colorama',
+        "networkx>=1.11,<2.6; python_version < '3.7'",
+        "colorama",
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],

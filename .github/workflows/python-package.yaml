@@ -17,9 +17,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9, pypy3]
+        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
         networkx-version: [1.11, 2.1, 2.4, 2.5, 2.6]
         exclude:
+          # OrderedGraph is deprecated in 2.6, so we don't support
+          - python-version: 3.6
+            networkx-version: 2.6
           # at time of writing, 2.6 was not yet built for pypy3
           - python-version: pypy3
             networkx-version: 2.6
