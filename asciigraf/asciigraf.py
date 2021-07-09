@@ -6,6 +6,7 @@
 #############################################################################
 
 import re
+import sys
 from collections import OrderedDict
 from itertools import chain
 from typing import List, Tuple
@@ -15,6 +16,11 @@ from colorama import Style, Fore
 import networkx
 
 from .point import Point
+
+if sys.version_info >= (3, 7):
+    networkx_Graph = networkx.Graph
+else:
+    networkx_Graph = networkx.OrderedGraph
 
 LEFT, RIGHT = Point(-1, 0), Point(1, 0)
 ABOVE, BELOW = Point(0, -1), Point(0, 1)
@@ -118,7 +124,7 @@ def get_edges(network_string, nodes, labels):
 
 def build_networkx_graph(nodes, edges):
     # Build networkx datastructure
-    ascii_graph = networkx.OrderedGraph()
+    ascii_graph = networkx_Graph()
     ascii_graph.add_nodes_from(
         (node, {"position": tuple(pos)}) for pos, node in nodes.items()
     )
