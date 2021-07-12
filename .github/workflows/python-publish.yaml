@@ -29,9 +29,11 @@ jobs:
         pip install build
     - name: Update VERSION
       run: |
-        echo ${{ env.GITHUB_REF }} > asciigraf/VERSION
+        echo "${GITHUB_REF#refs/*/}" > asciigraf/VERSION
     - name: Build package
-      run: python -m build
+      run: |
+        echo "Building $(cat asciigraf/VERSION)"
+        python -m build
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
