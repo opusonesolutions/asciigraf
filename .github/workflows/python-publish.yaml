@@ -14,9 +14,10 @@ on:
 
 jobs:
   deploy:
-
+    env:
+      PUBLISH_TAG: ${GITHUB_REF#refs/*/}
+      VERSION_FILE: $(basename $GITHUB_REPOSITORY)/VERSION
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -27,12 +28,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install build
-    - name: Update VERSION
+    - name: Check VERSION
       run: |
-        echo "${GITHUB_REF#refs/*/}" > asciigraf/VERSION
+        if ! echo ${{ env.PUBLISH_TAG }} | grep -P -e "^\d+\.\d+\.\d+((rc|alpha)\d+)?$"; then
+          echo "Tag ${{ env.PUBLISH_TAG }} doesn't match x.y.z pattern. Not pushing.";
+          exit 1;
+        fi
     - name: Build package
       run: |
-        echo "Building $(cat asciigraf/VERSION)"
+        echo "Building ${{ env.PUBLISH_TAG }}"
+        echo ${{ env.PUBLISH_TAG }} > ${{ env.VERSION_FILE }}
         python -m build
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
