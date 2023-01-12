@@ -1,0 +1,49 @@
+[project]
+name = "asciigraf"
+description = "A python library for making ascii-art into network graphs."
+dynamic = ["version"]
+readme = "README.rst"
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords=["graph", "network", "testing", "parser"]
+authors = [
+    { name = "Opus One Solutions" },
+    { email = "rnd@opusonesolutions.com" },
+]
+dependencies = [
+    "networkx",
+    "colorama",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "flake8",
+]
+
+[project.urls]
+repository = "https://github.com/opusonesolutions/asciigraf"
+
+
+## build specification
+[build-system]
+requires = ["setuptools >= 61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {file = "asciigraf/VERSION"}
+
+[tool.setuptools.packages.find]
+include=["asciigraf*"]
+
