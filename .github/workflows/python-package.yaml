@@ -17,20 +17,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
-        networkx-version: [1.11, 2.1, 2.4, 2.5, 2.6]
-        exclude:
-          # OrderedGraph is deprecated in 2.6, so we don't support
-          - python-version: 3.6
-            networkx-version: 2.6
-          # at time of writing, 2.6 was not yet built for pypy3
-          - python-version: pypy3
-            networkx-version: 2.6
-          # <=2.1 uses 'fractions.gcd' which is not available in python 3.9
-          - python-version: 3.9
-            networkx-version: 1.11
-          - python-version: 3.9
-            networkx-version: 2.1
+        python-version: ['3.8', '3.9', '3.10', '3.11', 'pypy3.8', 'pypy3.9']
+        networkx-version: ['2.4','2.5', '2.6', '2.7', '2.8', '3.0']
+        include:
+          - python-version: '3.7'
+            networkx-version: '2.6'
+          - python-version: '3.7'
+            networkx-version: '1.11'
+          - python-version: '3.8'
+            networkx-version: '1.11'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}

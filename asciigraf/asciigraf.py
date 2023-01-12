@@ -391,8 +391,8 @@ class AnsiColours:
 def highlight_bad_edge_characters(
     network_string: str, relevant_char_positions: List[Point]
 ) -> str:
-    """Highlights all the characters specified in `relevant_char_positions` using
-    ANSI colour codes"""
+    """Highlights all the characters specified in `relevant_char_positions`
+    using ANSI colour codes"""
     try:
         colorama.init()
         lines = network_string.splitlines(keepends=True)
