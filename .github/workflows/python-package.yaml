@@ -62,6 +62,12 @@ jobs:
             networkx-version: '1.11'
           - python-version: '3.8'
             networkx-version: '1.11'
+        exclude:
+            # missing wheels for scipy at these combos
+          - python-version: 'pypy3.9'
+            networkx-version: '2.6'
+          - python-version: 'pypy3.8'
+            networkx-version: '2.6'
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
