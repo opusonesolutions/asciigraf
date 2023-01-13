@@ -12,39 +12,72 @@ on:
       - master
 
 jobs:
-  test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install Dependancies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+      - name: Lint with flake8
+        run: |
+          flake8
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[test]
+      - name: Test with Pytest
+        run: |
+          pytest --junitxml=junit/test-results-${{ matrix.networkx-version }}-${{ matrix.python-version }}.xml --cov-report term-missing  --cov-report=xml --cov-report=html --cov=asciigraf
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.networkx-version }}-${{ matrix.python-version }}
+          path: junit/test-results-${{ matrix.networkx-version }}-${{ matrix.python-version }}.xml
+  compatibility:
+    needs: [lint, unit-test]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
-        networkx-version: [1.11, 2.1, 2.4, 2.5, 2.6]
+        python-version: ['3.8', '3.9', '3.10', '3.11', 'pypy3.8', 'pypy3.9']
+        networkx-version: ['2.4','2.5', '2.6', '2.7', '2.8', '3.0']
+        include:
+          - python-version: '3.7'
+            networkx-version: '2.6'
+          - python-version: '3.7'
+            networkx-version: '1.11'
+          - python-version: '3.8'
+            networkx-version: '1.11'
         exclude:
-          # OrderedGraph is deprecated in 2.6, so we don't support
-          - python-version: 3.6
-            networkx-version: 2.6
-          # at time of writing, 2.6 was not yet built for pypy3
-          - python-version: pypy3
-            networkx-version: 2.6
-          # <=2.1 uses 'fractions.gcd' which is not available in python 3.9
-          - python-version: 3.9
-            networkx-version: 1.11
-          - python-version: 3.9
-            networkx-version: 2.1
+            # missing wheels for scipy at these combos
+          - python-version: 'pypy3.9'
+            networkx-version: '2.6'
+          - python-version: 'pypy3.8'
+            networkx-version: '2.6'
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[test]
-        pip install networkx==${{ matrix.networkx-version }}
-    - name: Lint with flake8
-      run: |
-        flake8
-    - name: Test with Pytest
-      run: |
-        pytest --junitxml=junit/test-results.xml --cov-report term-missing  --cov-report=xml --cov-report=html --cov=asciigraf
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[test] networkx==${{ matrix.networkx-version }}
+      - name: Test with Pytest
+        run: |
+          pytest tests

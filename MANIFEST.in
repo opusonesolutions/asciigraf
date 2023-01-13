@@ -1,0 +1,5 @@
+recursive include asciigraf
+include asciigraf/VERSION
+include README.md
+
+prune tests

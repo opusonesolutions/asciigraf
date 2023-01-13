@@ -1,12 +1,6 @@
 asciigraf
 =========
 
-.. image:: https://travis-ci.org/opusonesolutions/asciigraf.svg?branch=master
-    :target: https://travis-ci.org/opusonesolutions/asciigraf
-
-.. image:: https://coveralls.io/repos/github/opusonesolutions/asciigraf/badge.svg?branch=master
-    :target: https://coveralls.io/github/opusonesolutions/asciigraf?branch=master
-
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
 
