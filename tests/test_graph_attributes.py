@@ -10,6 +10,18 @@ import networkx
 from asciigraf import graph_from_ascii
 
 
+def test_ascii_string_attribute():
+    ascii_string = """
+        NodeA-----
+                 |
+                 |---NodeB
+                                 """
+
+    graph = graph_from_ascii(ascii_string)
+
+    assert graph.graph["ascii_string"] == ascii_string
+
+
 def test_line_lengths():
     graph = graph_from_ascii("""
             <13>           <10>

@@ -43,7 +43,9 @@ def graph_from_ascii(network_string):
     """
     nodes, labels = get_nodes_and_labels(network_string)
     edges = get_edges(network_string, nodes, labels)
-    return build_networkx_graph(nodes, edges)
+    graph = build_networkx_graph(nodes, edges)
+    graph.graph["ascii_string"] = network_string
+    return graph
 
 
 def get_edges(network_string, nodes, labels):

@@ -33,8 +33,11 @@ Usage
 -----
 
 Asciigraf expects a string containg a 2-d ascii diagram. Nodes can be an
-alphanumeric string composed of characters in ``A-Z``, ``a-z``, ``0-9``,
-and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``.
+alphanumeric string composed of words, sentences and punctuation (for a look at
+what is all tested to work, see the `node recognition tests`_). Edges can be
+composed of ``-``, ``/``, ``\`` and ``|``.
+
+.. _node recognition tests: https://github.com/opusonesolutions/asciigraf/blob/master/tests/test_node_match.py
 
 .. code:: python
 
@@ -57,13 +60,14 @@ and ``_, {, }``. Edges can be composed of ``-``, ``/``, ``\`` and ``|``.
     >>> ['NodeA', 'NodeB']
 
 
-Networkx provides tools to attach data to nodes and edges, and asciigraf
+Networkx provides tools to attach data to graphs, nodes and edges, and asciigraf
 leverages these in a number of ways; in the example below you can see that
 asciigraf uses this to attach a ``x, y`` position tuple to each node
-indicating where on the *(x, y)* plane each node
-starts ( *0,0* is at the top-left). It also attaches a ``length`` attribute
+indicating the line/col position of each node ( *0,0* is at the top-left).
+It also attaches a ``length`` attribute
 to each edge which matches the number of characters in that edge, as well
-as a list of positions for each character an edge
+as a list of positions for each character an edge. In addition, the input data
+is attached as a graph attribute ``ascii_string`` for reference.
 
 .. code:: python
 
@@ -76,6 +80,12 @@ as a list of positions for each character an edge
     print(network.edge['NodeA']['NodeB']['points'])
     >>> [(15, 1), (16, 1), (17, 1), (18, 1),
          (19, 1), (19, 2), (19, 3), (20, 3), (21, 3), (22, 3)]
+
+    print(network.graph["ascii_string"])
+    >>>
+        NodeA-----
+                 |
+                 |---NodeB
 
 
 Asciigraf also lets you annotate the edges of graphs using in-line labels ---
@@ -90,7 +100,7 @@ on which it is drawn with the attribute name ``label``.
                       |
                       |
                       |
-                      D---(string)----E
+                      D---(pebbles)----E
 
     """)
 
@@ -101,7 +111,7 @@ on which it is drawn with the attribute name ``label``.
     >>> string
 
     print(network.get_edge_data("D", "E")["label"])
-    >>> string
+    >>> pebbles
 
     print(hasattr(network.get_edge_data("B", "D"), "label"))
     >>> False
