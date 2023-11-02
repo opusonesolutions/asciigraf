@@ -37,7 +37,7 @@ alphanumeric string composed of words, sentences and punctuation (for a look at
 what is all tested to work, see the `node recognition tests`_). Edges can be
 composed of ``-``, ``/``, ``\`` and ``|``.
 
-.. _node recognition tests: https://github.com/opusonesolutions/asciigraf/blob/master/tests/test_node_match.py
+.. _node recognition tests: https://github.com/opusonesolutions/asciigraf/blob/main/tests/test_node_match.py
 
 .. code:: python
 
