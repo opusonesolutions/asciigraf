@@ -12,6 +12,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords=["graph", "network", "testing", "parser"]
@@ -28,7 +29,9 @@ dependencies = [
 test = [
     "pytest",
     "pytest-cov",
-    "flake8",
+]
+lint = [
+    "mypy",
 ]
 
 [project.urls]
@@ -37,7 +40,7 @@ repository = "https://github.com/opusonesolutions/asciigraf"
 
 ## build specification
 [build-system]
-requires = ["setuptools >= 66.1.1"]
+requires = ["setuptools >= 73.0.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
