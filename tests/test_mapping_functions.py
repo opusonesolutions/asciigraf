@@ -6,11 +6,7 @@
 #############################################################################
 
 
-from asciigraf.asciigraf import (
-    draw,
-    get_edge_chars,
-    patch_edge_chars_over_labels
-)
+from asciigraf.asciigraf import draw, get_edge_chars, patch_edge_chars_over_labels
 from asciigraf.point import Point
 
 
@@ -66,34 +62,40 @@ def test_patching_edge_chars_over_vertical_label():
     labels = {Point(6, 3): "(label)"}
     edge_chars = patch_edge_chars_over_labels(labels, edge_chars)
 
-    assert draw(edge_chars) == """
+    assert (
+        draw(edge_chars)
+        == """
         |
         |
         |
         |
         |"""
+    )
 
 
 def test_drawing_nodes_and_edge_chars():
-    assert draw(
-        edge_chars={
-            Point(8, 1): "|",
-            Point(8, 2): "|",
-            Point(8, 4): "|",
-            Point(8, 5): "|",
-        },
-        nodes={
-            Point(8, 3): "my_node",
-            Point(12, 3): "my_node",
-            Point(7, 3): "my_node",
-            Point(9, 3): "my_node",
-            Point(10, 3): "my_node",
-            Point(6, 3): "my_node",
-            Point(11, 3): "my_node",
-        }
-    ) == """
+    assert (
+        draw(
+            edge_chars={
+                Point(8, 1): "|",
+                Point(8, 2): "|",
+                Point(8, 4): "|",
+                Point(8, 5): "|",
+            },
+            nodes={
+                Point(8, 3): "my_node",
+                Point(12, 3): "my_node",
+                Point(7, 3): "my_node",
+                Point(9, 3): "my_node",
+                Point(10, 3): "my_node",
+                Point(6, 3): "my_node",
+                Point(11, 3): "my_node",
+            },
+        )
+        == """
         |
         |
       my_node
         |
         |"""
+    )

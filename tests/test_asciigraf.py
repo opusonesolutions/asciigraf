@@ -9,8 +9,8 @@ import pytest
 
 from asciigraf import graph_from_ascii
 from asciigraf.asciigraf import (
-    node_iter,
     InvalidEdgeError,
+    node_iter,
 )
 from asciigraf.point import Point
 
@@ -176,7 +176,7 @@ def test_converts_meshed_network():
         ("1", "2"),
         ("1", "3"),
         ("2", "4"),
-        ("3", "4")
+        ("3", "4"),
     }
 
 
@@ -192,7 +192,7 @@ def test_node_ordering():
         ("3", "2"),
         ("3", "1"),
         ("2", "4"),
-        ("1", "4")
+        ("1", "4"),
     }
 
 
@@ -212,9 +212,7 @@ def test_adjacent_edges():
         c----------d
     """)
 
-    assert set(graph.nodes()) == {
-        "a", "b", "c", "d"
-    }
+    assert set(graph.nodes()) == {"a", "b", "c", "d"}
     assert set(graph.edges()) == {
         ("a", "b"),
         ("c", "d"),
@@ -249,13 +247,9 @@ def test_line_labels():
                       D---(string)----E
     """)
 
-    assert set(graph.nodes()) == {
-        "A", "B", "C", "D", "E"
-    }
+    assert set(graph.nodes()) == {"A", "B", "C", "D", "E"}
 
-    assert set(graph.edges()) == {
-        ("A", "B"), ("B", "C"), ("B", "D"), ("D", "E")
-    }
+    assert set(graph.edges()) == {("A", "B"), ("B", "C"), ("B", "D"), ("D", "E")}
 
     assert graph.get_edge_data("A", "B")["label"] == "nuts"
     assert graph.get_edge_data("A", "B")["length"] == 13
@@ -271,25 +265,28 @@ def test_line_labels():
     assert graph.get_edge_data("D", "E")["length"] == 15
 
 
-@pytest.mark.parametrize("label", [
-    'longlonglabel', 'short', 'l',
-])
+@pytest.mark.parametrize(
+    "label",
+    [
+        "longlonglabel",
+        "short",
+        "l",
+    ],
+)
 def test_vertical_line_labels(label):
-    graph = graph_from_ascii("""
+    graph = graph_from_ascii(
+        """
         A
         |
        ({label})
         |
         B
-    """.format(label=label))
+    """.format(label=label)
+    )
 
-    assert set(graph.nodes()) == {
-        "A", "B"
-    }
+    assert set(graph.nodes()) == {"A", "B"}
 
-    assert set(graph.edges()) == {
-        ("A", "B")
-    }
+    assert set(graph.edges()) == {("A", "B")}
 
     assert graph.get_edge_data("A", "B")["label"] == label
     assert graph.get_edge_data("A", "B")["length"] == 3
@@ -304,14 +301,9 @@ def test_vertical_line_adjacent_labels():
                 B
     """)
 
-    assert set(graph.nodes()) == {
-        "A", "B", "C", "D"
-    }
+    assert set(graph.nodes()) == {"A", "B", "C", "D"}
 
-    assert set(graph.edges()) == {
-        ("A", "D"),
-        ("C", "B")
-    }
+    assert set(graph.edges()) == {("A", "D"), ("C", "B")}
 
     assert graph.get_edge_data("C", "B")["label"] == "Vertical"
     assert graph.get_edge_data("C", "B")["length"] == 3
@@ -323,7 +315,7 @@ def test_too_many_neighbours_triggers_bad_edge_exception(caplog):
                1---------------3
                        |
                        2""")
-
+    # fmt: off
     assert str(e.value) == '''\
 Too many many neighbors at ln 1, col 23
 
@@ -333,14 +325,21 @@ Too many many neighbors at ln 1, col 23
 \x1b[0m                       2\x1b[2m"""\x1b[0m''' # noqa
 
 
+# fmt: on
+
+
 def test_missing_end_node_raises_missing_end_node_exception():
     with pytest.raises(InvalidEdgeError) as e:
-        graph_from_ascii('1---')
+        graph_from_ascii("1---")
 
+    # fmt: off
     assert str(e.value) == """\
 Too few many neighbors at ln 0, col 3
 
 \x1b[0mnetwork_string = \x1b[2m"\x1b[0m1-\x1b[31m\x1b[1m-\x1b[0m\x1b[31m\x1b[1m-\x1b[0m\x1b[2m"\x1b[0m"""  # noqa
+
+
+# fmt: on
 
 
 def test_bad_label_triggers_exception(caplog):
@@ -352,6 +351,8 @@ def test_bad_label_triggers_exception(caplog):
                 |
                 n3
         """)
+
+    # fmt: off
     assert str(e.value) == '''\
 Too many many neighbors at ln 3, col 16
 
@@ -362,3 +363,6 @@ Too many many neighbors at ln 3, col 16
 \x1b[0m                \x1b[31m\x1b[1m|\x1b[0m
 \x1b[0m                n3
 \x1b[0m\x1b[2m"""\x1b[0m'''  # noqa
+
+
+# fmt: on

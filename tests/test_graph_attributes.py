@@ -33,10 +33,13 @@ def test_line_lengths():
     """)
 
     lengths = networkx.get_edge_attributes(graph, "length")
+    # fmt: off
     assert lengths == {
         ("n0", "n1"): 13, ("n1", "n2"): 10,
-        ("n1", "n4"): 3,
+
+                       ("n1", "n4"): 3,
     }
+    # fmt: on
 
 
 def test_node_positions():
@@ -45,7 +48,8 @@ def test_node_positions():
                 Node_1---Node2-----
                                  /
                                Nald33
-        """)
+        """
+    )
     assert networkx.get_node_attributes(graph, "position")["Node_1"] == (16, 1)
     assert networkx.get_node_attributes(graph, "position")["Node2"] == (25, 1)
     assert networkx.get_node_attributes(graph, "position")["Nald33"] == (31, 3)
@@ -62,10 +66,12 @@ def test_node_position_attributes():
     """)
 
     node_positions = networkx.get_node_attributes(graph, "position")
+    # fmt: off
     assert node_positions == {
         "n0": (8, 2), "n1": (23, 2), "n2": (35, 2),
                       "n4": (23, 6),
     }
+    # fmt: on
 
 
 def test_line_positions():
@@ -77,8 +83,9 @@ def test_line_positions():
                |
                n2 """)
 
-    points = networkx.get_edge_attributes(graph, 'points')
+    points = networkx.get_edge_attributes(graph, "points")
 
+    # fmt: off
     assert points == {
         ("n1", "n2"): [
             (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2),
@@ -87,6 +94,7 @@ def test_line_positions():
                                                          (15, 5),
         ]
     }
+    # fmt: on
 
 
 def test_line_positions_when_line_is_split():
@@ -98,8 +106,9 @@ def test_line_positions_when_line_is_split():
                |
                n2 """)
 
-    points = networkx.get_edge_attributes(graph, 'points')
+    points = networkx.get_edge_attributes(graph, "points")
 
+    # fmt: off
     assert points == {
         ("n1", "n2"): [
             (21, 2), (20, 2), (19, 2), (18, 2), (17, 2), (16, 2), (15, 2),
@@ -108,6 +117,7 @@ def test_line_positions_when_line_is_split():
             (15, 5),
         ]
     }
+    # fmt: on
 
 
 def test_line_positions_when_order_is_reversed():
@@ -117,7 +127,7 @@ def test_line_positions_when_order_is_reversed():
                |   |
                n2  n1""")
 
-    points = networkx.get_edge_attributes(graph, 'points')
+    points = networkx.get_edge_attributes(graph, "points")
 
     assert points == {
         ("n2", "n1"): [
@@ -135,7 +145,8 @@ def test_line_positions_when_order_is_reversed():
 def test_line_positions_with_horizontal_label():
     graph = graph_from_ascii("  n1---(label)--n2  ")
 
-    points = networkx.get_edge_attributes(graph, 'points')
+    points = networkx.get_edge_attributes(graph, "points")
+    # fmt: off
     assert points == {
         ("n1", "n2"): [
             # positions of the first three dashes right of `n1`
@@ -148,6 +159,7 @@ def test_line_positions_with_horizontal_label():
             (14, 0), (15, 0)
         ]
     }
+    # fmt: on
 
 
 def test_line_positions_with_vertical_label():
@@ -161,7 +173,7 @@ def test_line_positions_with_vertical_label():
 
     """)
 
-    assert networkx.get_edge_attributes(graph, 'points') == {
+    assert networkx.get_edge_attributes(graph, "points") == {
         ("n1", "n2"): [
             (12, 3),  # position of the '|' under `n1`
             (12, 4),  # position of the 'b' in `label`
