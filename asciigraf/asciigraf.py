@@ -8,11 +8,11 @@
 import re
 from collections import OrderedDict
 from itertools import chain
-from typing import List, Tuple
+from typing import Iterable
 
 import colorama
 import networkx
-from colorama import Style, Fore
+from colorama import Fore, Style
 
 from .point import Point
 
@@ -24,22 +24,24 @@ BOTTOM_LEFT, TOP_RIGHT = Point(1, -1), Point(-1, 1)
 
 EDGE_CHARS = {"\\", "-", "/", "|"}
 EDGE_CHAR_NEIGHBOURS = {  # first point in tuple is the point parsed first
-    "-":  [LEFT, RIGHT],
+    "-": [LEFT, RIGHT],
     "\\": [TOP_LEFT, BOTTOM_RIGHT],
-    "/":  [BOTTOM_LEFT, TOP_RIGHT],
-    "|":  [ABOVE, BELOW]
+    "/": [BOTTOM_LEFT, TOP_RIGHT],
+    "|": [ABOVE, BELOW],
 }
 
+# fmt: off
 ABUTTING = {
     TOP_LEFT:   "\\",  ABOVE: "|",    TOP_RIGHT: "/",
     LEFT:        "-",                     RIGHT: "-",
     BOTTOM_LEFT: "/",  BELOW: "|", BOTTOM_RIGHT: "\\",
 }
+# fmt: on
 
 
 def graph_from_ascii(network_string):
-    """ Produces a networkx graph, based on an ascii drawing
-        of a network
+    """Produces a networkx graph, based on an ascii drawing
+    of a network
     """
     nodes, labels = get_nodes_and_labels(network_string)
     edges = get_edges(network_string, nodes, labels)
@@ -49,18 +51,18 @@ def graph_from_ascii(network_string):
 
 
 def get_edges(network_string, nodes, labels):
-    """ Traverses all adjacent edge characters to identify
-        edges in the network.
+    """Traverses all adjacent edge characters to identify
+    edges in the network.
 
-        returns a set of dictionaries, each represeting an edge:
+    returns a set of dictionaries, each represeting an edge:
+    {
         {
-            {
-                "nodes": ("n1", "n2"),
-                "points": [Point(), ...]
-                "label": "(label_1)"  #
-            },
-            ...
-        }
+            "nodes": ("n1", "n2"),
+            "points": [Point(), ...]
+            "label": "(label_1)"  #
+        },
+        ...
+    }
 
     """
     edge_chars = get_edge_chars(network_string)
@@ -109,7 +111,7 @@ def get_edges(network_string, nodes, labels):
             pos, edge_char_to_neighbours, node_char_to_node
         )
 
-        for position in new_edge['points']:
+        for position in new_edge["points"]:
             edge_char_to_edge_map[position] = new_edge
             if position in label_char_to_label:
                 new_edge["label"] = label_char_to_label[position]
@@ -125,32 +127,35 @@ def build_networkx_graph(nodes, edges):
         (node, {"position": tuple(pos)}) for pos, node in nodes.items()
     )
     ascii_graph.add_edges_from(
-        (edge['nodes'][0], edge['nodes'][1], {
-            "length": len(edge["points"]),
-            "points": [tuple(el) for el in edge["points"]]
-        })
+        (
+            edge["nodes"][0],
+            edge["nodes"][1],
+            {
+                "length": len(edge["points"]),
+                "points": [tuple(el) for el in edge["points"]],
+            },
+        )
         for edge in edges
     )
     networkx.set_edge_attributes(
-        ascii_graph, name="label",
+        ascii_graph,
+        name="label",
         values={
-            edge["nodes"]: edge["label"][1:-1]
-            for edge in edges
-            if "label" in edge
-        }
+            edge["nodes"]: edge["label"][1:-1] for edge in edges if "label" in edge
+        },
     )
     return ascii_graph
 
 
 def get_nodes_and_labels(network_string):
-    """ Map the root position of nodes and labels
-        to the node / label text.
+    """Map the root position of nodes and labels
+    to the node / label text.
 
-        e.g. map_nodes_and_labels("  n1--(label1)--n2  ") -> {
-            Point(2, 0): "n1",
-            Point(6, 0): "(label1)",
-            Point(16, 0): "n2",
-        }
+    e.g. map_nodes_and_labels("  n1--(label1)--n2  ") -> {
+        Point(2, 0): "n1",
+        Point(6, 0): "(label1)",
+        Point(16, 0): "n2",
+    }
     """
     nodes = OrderedDict()  # of the form {Point -> 'node_name'}
     labels = OrderedDict()  # of the form {Point -> 'label'}
@@ -163,13 +168,13 @@ def get_nodes_and_labels(network_string):
 
 
 def get_edge_chars(network_string):
-    """ Map positions in the string to edge chars
+    """Map positions in the string to edge chars
 
-        e.g. get_edge_chars("   --|   ") -> {
-            Point(3,0): "-",
-            Point(4,0): "-",
-            Point(5,0): "|",
-        }
+    e.g. get_edge_chars("   --|   ") -> {
+        Point(3,0): "-",
+        Point(4,0): "-",
+        Point(5,0): "|",
+    }
     """
     return OrderedDict(
         (Point(col, row), char)
@@ -180,25 +185,25 @@ def get_edge_chars(network_string):
 
 
 def get_neighbours(pos, edge_chars, node_chars):
-    """ Return the edge/node positions that neighbour the given position.
+    """Return the edge/node positions that neighbour the given position.
 
-        e.g. let `pos` equal Point(2,2):
-         ___
-        |  /|
-        | *-|    -> Point(3, 1), Point(3, 2) are neighbours
-        |___|
-         ___
-        |  /|
-        |-* |    -> Point(3, 1), Point(1, 2) are neighbours
-        |___|
-         ______
-        |      |
-        |--Node| -> Point(1, 2), Point(3, 2) are neighbours
-        |______|
-         ___
-        |  -|
-        |---|    -> Point(1, 2), Point(3, 2) are neighbours, Point(0,3) is not
-        |___|
+    e.g. let `pos` equal Point(2,2):
+     ___
+    |  /|
+    | *-|    -> Point(3, 1), Point(3, 2) are neighbours
+    |___|
+     ___
+    |  /|
+    |-* |    -> Point(3, 1), Point(1, 2) are neighbours
+    |___|
+     ______
+    |      |
+    |--Node| -> Point(1, 2), Point(3, 2) are neighbours
+    |______|
+     ___
+    |  -|
+    |---|    -> Point(1, 2), Point(3, 2) are neighbours, Point(0,3) is not
+    |___|
 
     """
     neighbouring_positions = set()
@@ -220,68 +225,67 @@ def get_neighbours(pos, edge_chars, node_chars):
     return tuple(neighbouring_positions)
 
 
-def build_edge_from_position(
-        starting_char_position, neighbour_map, node_char_to_node):
-    """ Given the position of any one character on an edge, traverses the
-        neighbour_map to build an ordered list of all the points on the edge
+def build_edge_from_position(starting_char_position, neighbour_map, node_char_to_node):
+    """Given the position of any one character on an edge, traverses the
+    neighbour_map to build an ordered list of all the points on the edge
 
-        Arguments:
-          * starting_char_position: The position from which to start traversing
-                                    the edge.
-          * neighbour_map: For each character in the network_string, contains
-                           the positions of its two neighbours, which could
-                           be characters in a node or other edge characters
-          * node_char_to_node: a map of {node character position -> node}
-                               {
-                                    Point(0,0): "n1",
-                                    Point(1,0): "n1",
-                                    Point(2,2): "n2",
-                                    Point(3,2): "n2",
-                               }
+    Arguments:
+      * starting_char_position: The position from which to start traversing
+                                the edge.
+      * neighbour_map: For each character in the network_string, contains
+                       the positions of its two neighbours, which could
+                       be characters in a node or other edge characters
+      * node_char_to_node: a map of {node character position -> node}
+                           {
+                                Point(0,0): "n1",
+                                Point(1,0): "n1",
+                                Point(2,2): "n2",
+                                Point(3,2): "n2",
+                           }
     """
+
     def follow_edge(starting_position, neighbour):
         if neighbour in node_char_to_node:
             return (neighbour,)
         else:
             a, b = neighbour_map[neighbour]
             next_neighbour = a if b == starting_position else b
-            return (neighbour, ) + follow_edge(neighbour, next_neighbour)
+            return (neighbour,) + follow_edge(neighbour, next_neighbour)
 
     neighbour_1, neighbour_2 = sorted(neighbour_map[starting_char_position])
-    positions = list(chain(
-        reversed(follow_edge(starting_char_position, neighbour_1)),
-        (starting_char_position, ),
-        follow_edge(starting_char_position, neighbour_2)
-    ))
+    positions = list(
+        chain(
+            reversed(follow_edge(starting_char_position, neighbour_1)),
+            (starting_char_position,),
+            follow_edge(starting_char_position, neighbour_2),
+        )
+    )
 
     if positions[0] > positions[-1]:
         positions = list(reversed(positions))
 
     new_edge = dict(
         points=positions[1:-1],
-        nodes=(
-            node_char_to_node[positions[0]],
-            node_char_to_node[positions[-1]]
-        ),
+        nodes=(node_char_to_node[positions[0]], node_char_to_node[positions[-1]]),
     )
     return new_edge
 
 
 def patch_edge_chars_over_labels(labels, edge_chars):
-    """ Adds in edge chars where labels crossed an edge
+    """Adds in edge chars where labels crossed an edge
 
-        e.g.
+    e.g.
 
-        ---(horizontal_label)---
+    ---(horizontal_label)---
 
-                becomes
+            becomes
 
-        ------------------------
+    ------------------------
 
-        e.g.
-                |                         |
-          (vertical_label)   becomes      |
-                |                         |
+    e.g.
+            |                         |
+      (vertical_label)   becomes      |
+            |                         |
     """
 
     edge_chars = dict(edge_chars)  # so we don't mutate
@@ -291,6 +295,7 @@ def patch_edge_chars_over_labels(labels, edge_chars):
         for i, char in enumerate(label)
     )
     for position, label_character in label_chars.items():
+
         def neighbour(offset):
             return edge_chars.get(position + offset)
 
@@ -306,47 +311,47 @@ def patch_edge_chars_over_labels(labels, edge_chars):
             # since we process each label left->right, we'll have already
             # patched characters to the left of our position during previous
             # iterations of the loop
-            if neighbour(LEFT) == '-':
-                edge_chars[position] = '-'
+            if neighbour(LEFT) == "-":
+                edge_chars[position] = "-"
 
     return OrderedDict(sorted(edge_chars.items()))
 
 
 def char_map(text, root_position):
-    """ Maps the position of each character in 'text'
+    """Maps the position of each character in 'text'
 
-        e.g.
+    e.g.
 
-        char_map("foo", root_position=Point(20, 2)) -> {
-            Point(20, 2) -> 'f',
-            Point(21, 2) -> 'o',
-            Point(22, 2) -> 'o',
-        }
+    char_map("foo", root_position=Point(20, 2)) -> {
+        Point(20, 2) -> 'f',
+        Point(21, 2) -> 'o',
+        Point(22, 2) -> 'o',
+    }
     """
     return OrderedDict(
-        (Point(root_position.x+x, root_position.y), char)
+        (Point(root_position.x + x, root_position.y), char)
         for x, char in enumerate(text)
     )
 
 
 def map_text_chars_to_text(text_map):
-    """ Maps characters in text elements to the text elements
+    """Maps characters in text elements to the text elements
 
-        e.g.
+    e.g.
 
-        text_map = {
-            Point(1, 2): 'foo',
-            Point(3, 4):  'bar',
-        }
+    text_map = {
+        Point(1, 2): 'foo',
+        Point(3, 4):  'bar',
+    }
 
-        map_text_chars_to_text(text_map) -> {
-            Point(1, 2): 'foo',
-            Point(2, 2): 'foo',
-            Point(3, 2): 'foo',
-            Point(3, 4): 'bar',
-            Point(4, 4): 'bar',
-            Point(5, 4): 'bar',
-        }
+    map_text_chars_to_text(text_map) -> {
+        Point(1, 2): 'foo',
+        Point(2, 2): 'foo',
+        Point(3, 2): 'foo',
+        Point(3, 4): 'bar',
+        Point(4, 4): 'bar',
+        Point(5, 4): 'bar',
+    }
     """
     return OrderedDict(
         (position, text)
@@ -356,26 +361,28 @@ def map_text_chars_to_text(text_map):
 
 
 def node_iter(network_string):
-    """ Yields the starting position and value of any nodes in
-        the ascii network string
+    """Yields the starting position and value of any nodes in
+    the ascii network string
 
-        e.g. node_iter("node1----(label1)") -> (
-            (Point(0,0), node1), (Point(9,0), (label1))
-        )
+    e.g. node_iter("node1----(label1)") -> (
+        (Point(0,0), node1), (Point(9,0), (label1))
+    )
     """
+    # fmt: off
     NODE_MATCH = re.compile(
         r'('
           r'[^ \-\\\/|]+[ ^ ]'  # any of non-edge chars, followed by  1 space # noqa
         r')*'  # as many of ^ as are repeated (including zero)
         r'([^ \\\/\-|]+)'  # ... followed by a group of non-edge characters
     )
+    # fmt: on
     for row, line in enumerate(network_string.split("\n")):
         for match in NODE_MATCH.finditer(line):
             yield (match.group(0), Point(match.start(), row))
 
 
 class InvalidEdgeError(Exception):
-    """ Raise this when an edge is wrongly drawn """
+    """Raise this when an edge is wrongly drawn"""
 
 
 class AnsiColours:
@@ -385,7 +392,7 @@ class AnsiColours:
 
 
 def highlight_bad_edge_characters(
-    network_string: str, relevant_char_positions: List[Point]
+    network_string: str, relevant_char_positions: list[Point]
 ) -> str:
     """Highlights all the characters specified in `relevant_char_positions`
     using ANSI colour codes"""
@@ -393,18 +400,16 @@ def highlight_bad_edge_characters(
         colorama.init()
         lines = network_string.splitlines(keepends=True)
 
-        quote_char = "\'" if "\"" in network_string else "\""
+        quote_char = "'" if '"' in network_string else '"'
         quote_val = (
-            3 * quote_char
-            if len(network_string.splitlines()) > 1
-            else quote_char
+            3 * quote_char if len(network_string.splitlines()) > 1 else quote_char
         )
         quotes = Style.DIM + quote_val + Style.RESET_ALL
 
         # first we calculate the index in `network_string` of each character
         # we want to highlight
         char_indexes = sorted(
-            sum(len(el) for el in lines[0:char_pos.y])
+            sum(len(el) for el in lines[0 : char_pos.y])
             + char_pos.x  # depth into relevant line
             for char_pos in relevant_char_positions
         )
@@ -415,8 +420,8 @@ def highlight_bad_edge_characters(
         # e.g. given indexes for the stars in '----*====*----', we would get
         # ['----;, '====', '----' ]
         def keep_ranges(
-            char_indexes: List[int], network_string: str
-        ) -> List[Tuple[int, int]]:
+            char_indexes: list[int], network_string: str
+        ) -> Iterable[tuple[int, int]]:
             yield (0, char_indexes[0])
             for a, b in zip(char_indexes[:-1], char_indexes[1:]):
                 yield (a + 1, b)
@@ -435,13 +440,8 @@ def highlight_bad_edge_characters(
         # next, we wrap the target characters in ansi colours, and sandwich
         # them back in between the segments
         highlighted_segments = [
-            (
-                f"{preceeding_segment}"
-                f"{Fore.RED + Style.BRIGHT}{char}{Style.RESET_ALL}"
-            )
-            for preceeding_segment, char in zip(
-                segments[:-1], replaced_characters
-            )
+            (f"{preceeding_segment}{Fore.RED + Style.BRIGHT}{char}{Style.RESET_ALL}")
+            for preceeding_segment, char in zip(segments[:-1], replaced_characters)
         ]
         error_text = (
             f"network_string = {quotes}"
@@ -450,7 +450,7 @@ def highlight_bad_edge_characters(
         )
 
         # here we resplit the text as lines, and do some cleanup formatting
-        error_lines = ''.join(error_text).splitlines(keepends=True)
+        error_lines = "".join(error_text).splitlines(keepends=True)
         if error_lines[-1].lstrip() == quotes:
             # this gets rid of the indent if the last line of `network_string`
             # is just indented closing quotes, i.e. the underscored part here:
@@ -466,17 +466,14 @@ def highlight_bad_edge_characters(
         # lastly, we add a reset to each line in the map, to override anything
         # added by tools that try to add colouring to error outputs (e.g.
         # pytest)
-        return (
-            Style.RESET_ALL
-            + Style.RESET_ALL.join(error_lines)
-        )
+        return Style.RESET_ALL + Style.RESET_ALL.join(error_lines)
     except Exception:
         # it'd be embarassing to fail while trying to describe why we failed
         return ""
 
 
 def draw(edge_chars, nodes=None):
-    """ Redraws a char_map and node_char map """
+    """Redraws a char_map and node_char map"""
     nodes = nodes or {}
     node_start_map = OrderedDict()
     for position, node_label in nodes.items():
@@ -486,20 +483,19 @@ def draw(edge_chars, nodes=None):
             if position < node_start_map[node_label]:
                 node_start_map[node_label] = position
 
-    all_chars = sorted(chain(
-        ((val, key) for key, val in node_start_map.items()),
-        edge_chars.items()),
-        key=lambda x: x[0]
+    all_chars = sorted(
+        chain(((val, key) for key, val in node_start_map.items()), edge_chars.items()),
+        key=lambda x: x[0],
     )
 
     string = ""
     cursor = Point(0, 0)
     for position, label in all_chars:
         if cursor.y < position.y:
-            string += '\n' * (position.y - cursor.y)
-            cursor = Point(0, position.y+1)
+            string += "\n" * (position.y - cursor.y)
+            cursor = Point(0, position.y + 1)
         if cursor.x < position.x:
-            string += ' ' * (position.x - cursor.x)
+            string += " " * (position.x - cursor.x)
             cursor = position
         string += label
         cursor = Point(position.x + len(label), position.y)

@@ -7,6 +7,8 @@
 
 
 class Point(object):
+    x: int
+    y: int
 
     def __setattr__(self, attr, val):
         raise TypeError("Can't set '{}' on Point object".format(attr))
@@ -14,9 +16,9 @@ class Point(object):
     def __delattr__(self, attr):
         raise TypeError("Can't delete '{}' on Point object".format(attr))
 
-    def __init__(self, x, y):
-        super(Point, self).__setattr__('x', x)
-        super(Point, self).__setattr__('y', y)
+    def __init__(self, x: int, y: int):
+        super(Point, self).__setattr__("x", x)
+        super(Point, self).__setattr__("y", y)
 
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
@@ -32,28 +34,22 @@ class Point(object):
         return "Point({}, {})".format(self.x, self.y)
 
     def __eq__(self, other):
-        return (type(self) is type(other) and
-                self.x == other.x and
-                self.y == other.y
-                )
+        return type(self) is type(other) and self.x == other.x and self.y == other.y
 
     def __lt__(self, other):
         """Point instances are ordered by row and
-           then column.
+        then column.
 
-           e.g. in the following diagram,
-                        b
-                   a----|
+        e.g. in the following diagram,
+                     b
+                a----|
 
-            if the points are ordered by position then we
-            can expect this edge to always be (b, a)
-            and not (a, b) based on reading the diagram like
-            a paragraph, left-to-right and then top-to-bottom.
+         if the points are ordered by position then we
+         can expect this edge to always be (b, a)
+         and not (a, b) based on reading the diagram like
+         a paragraph, left-to-right and then top-to-bottom.
         """
-        return self.y < other.y or (
-            not self.y > other.y and
-            self.x < other.x
-        )
+        return self.y < other.y or (not self.y > other.y and self.x < other.x)
 
     def __hash__(self):
         return hash((self.__class__, self.x, self.y))

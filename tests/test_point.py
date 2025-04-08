@@ -47,9 +47,7 @@ def test_points_compare():
 def test_points_are_sortable():
     starting_list = [Point(1, 2), Point(2, 1), Point(1, 1)]
     sorted_list = sorted(starting_list)
-    assert sorted_list == [
-        Point(1, 1), Point(2, 1), Point(1, 2)
-    ]
+    assert sorted_list == [Point(1, 1), Point(2, 1), Point(1, 2)]
 
 
 def test_sorting_commutes():
@@ -74,7 +72,7 @@ def test_points_iter_out_their_coords(p12):
 
 
 def test_points_repr_their_coords(p12):
-    assert repr(p12) == 'Point(1, 2)'
+    assert repr(p12) == "Point(1, 2)"
 
 
 def test_point_attributes_cant_be_set(p12):

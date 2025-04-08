@@ -2,17 +2,14 @@ import asciigraf.asciigraf
 
 
 def node_iter(edge_label):
-    """ This test module is only concerned with what labels are
-        recognized, so we ignore the position yielded by
-        asciigraf.asciigraf.node_iter """
-    return [
-        label
-        for label, _ in asciigraf.asciigraf.node_iter(edge_label)
-    ]
+    """This test module is only concerned with what labels are
+    recognized, so we ignore the position yielded by
+    asciigraf.asciigraf.node_iter"""
+    return [label for label, _ in asciigraf.asciigraf.node_iter(edge_label)]
 
 
 def test_supports_single_character_nodes():
-    assert node_iter("---n--1---") == ["n", '1']
+    assert node_iter("---n--1---") == ["n", "1"]
 
 
 def test_supports_full_sentances():
@@ -27,7 +24,7 @@ def test_supports_full_sentances():
     """) == [
         "My Best friend Bart!",
         "My worst `friend` Sarah",
-        'What\'s his name, "Frank"?'
+        'What\'s his name, "Frank"?',
     ]
 
 
@@ -40,9 +37,8 @@ def test_supports_decimal_numbers():
 
 
 def test_supports_empty_brackets():
-    assert node_iter("-----}{---()---)(--[]---][--") == [
-        "}{", "()", ")(", "[]", "][",
-    ]
+    expected_nodes = ["}{", "()", ")(", "[]", "]["]
+    assert node_iter("-----}{---()---)(--[]---][--") == expected_nodes
 
 
 def test_minimum_gap_between_nodes():

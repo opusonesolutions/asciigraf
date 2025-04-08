@@ -1,48 +1,87 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+
+requires = [ "setuptools>=66.1.1" ]
+
 [project]
 name = "asciigraf"
 description = "A python library for making ascii-art into network graphs."
-dynamic = ["version"]
 readme = "README.rst"
+keywords = [ "graph", "network", "parser", "testing" ]
 license = { file = "LICENSE.txt" }
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-]
-keywords=["graph", "network", "testing", "parser"]
 authors = [
-    { name = "Opus One Solutions" },
-    { email = "rnd@opusonesolutions.com" },
+  { name = "Opus One Solutions" },
+  { email = "rnd@opusonesolutions.com" },
 ]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = [ "version" ]
 dependencies = [
-    "networkx",
-    "colorama",
+  "colorama",
+  "networkx",
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "flake8",
+optional-dependencies.test = [
+  # precommit hook doesn't install it for *reasons*
+  "liccheck",
+  "pre-commit",
+  "pytest",
+  "pytest-cov",
+  # needed by liccheck
+  "setuptools",
 ]
-
-[project.urls]
-repository = "https://github.com/opusonesolutions/asciigraf"
-
-
 ## build specification
-[build-system]
-requires = ["setuptools >= 66.1.1"]
-build-backend = "setuptools.build_meta"
+urls.repository = "https://github.com/opusonesolutions/asciigraf"
 
 [tool.setuptools.dynamic]
-version = {file = "asciigraf/VERSION"}
+version = { file = "asciigraf/VERSION" }
 
 [tool.setuptools.packages.find]
-include=["asciigraf*"]
+include = [ "asciigraf*" ]
 
+## linting configurations
+
+[tool.ruff]
+lint.extend-select = [ "I" ]
+lint.ignore = [ "E741" ]
+
+[tool.coverage.run]
+branch = true
+omit = [ "tests/*" ]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+
+[tool.bandit]
+exclude_dirs = [ "tests" ]
+
+[tool.liccheck]
+authorized_licenses = [
+  "BSD",
+  "MIT",
+  "License :: OSI Approved :: MIT",
+  "Apache Software",
+  "Mozilla Public License 2.0 (MPL 2.0)",
+  "LGPLv3+",
+  "LGPLv3",
+  "public domain",
+  "Python Software Foundation",
+]
+unauthorized_licenses = [
+  "GPL v3",
+  "The Unlicense (Unlicense)",
+  "ISC",
+  "ISC License (ISCL)",
+]
+dependencies = true # to load [project.dependencies]
