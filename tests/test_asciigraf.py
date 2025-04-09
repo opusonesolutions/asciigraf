@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 #############################################################################
 
+import unittest.mock
+
 import pytest
 
 from asciigraf import graph_from_ascii
@@ -366,3 +368,25 @@ Too many many neighbors at ln 3, col 16
 
 
 # fmt: on
+
+
+@unittest.mock.patch("asciigraf.asciigraf.colorama.init", side_effect=AttributeError)
+def test_failed_highlighting(colorama_mock):
+    """If the highlighting fails, we don't want to crash; instead, fall back
+    on not reporting the bad graph in the error"""
+    with pytest.raises(InvalidEdgeError) as e:
+        graph_from_ascii("""
+                n1
+                |
+        n2--(label)
+                |
+                n3
+        """)
+
+    assert (
+        str(e.value)
+        == """\
+Too many many neighbors at ln 3, col 16
+
+"""
+    )  # noqa
